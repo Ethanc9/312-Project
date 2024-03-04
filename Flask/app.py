@@ -13,6 +13,10 @@ def home():
 def welcome():
     return render_template('welcome.html')  # render a template
 
+@app.route('/login')
+def render_login():
+    return render_template('login.html')
+
 # start the server with the 'run()' method
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
