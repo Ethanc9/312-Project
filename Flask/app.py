@@ -4,8 +4,8 @@ from util.login import register
 app = Flask(__name__)
 
 @app.route('/')
-def redirect_to_login():
-    return redirect(url_for('render_login'))
+def home():
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def render_login():
@@ -15,10 +15,6 @@ def render_login():
         register(username, password)
         
     return render_template('login.html')
-
-@app.route('/home')
-def home():
-    return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def render_register():

@@ -1,49 +1,69 @@
-/* Container for the question */
-.question-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9; /* Light background to make content pop */
 }
 
-/* Style for the question input */
-#question {
-    width: 50%; /* Adjust width as needed */
-    padding: 10px;
-    margin: 0 auto; /* Center the input */
-    display: block;
-    border-radius: 5px; /* Rounded edges */
+.container {
+  width: 60%; /* Adjust based on preference */
+  margin: 40px auto; /* More margin for better focus */
+  padding: 20px;
+  background-color: #ffffff; /* Bright but not distracting */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  border-radius: 10px; /* Rounded corners */
 }
 
-/* Adjusting existing .answer class for rounded rectangles */
-.answer {
-    margin: 10px auto;
-    width: 60%; /* Adjust width as needed */
-    padding: 20px;
-    background-color: #f0f0f0; /* Light grey background */
-    border-radius: 5px; /* Rounded edges */
-    text-align: center;
-    display: block;
+#questionInput {
+  width: calc(100% - 20px); /* Adjust width to account for padding */
+  padding: 10px;
+  margin-bottom: 20px; /* More space between elements */
+  border: 2px solid #007bff; /* Kahoot-like blue border */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Slightly larger font for readability */
+  resize: vertical; /* Allows the textarea to be resized vertically */
 }
 
-/* Style adjustments for the input fields within the answer bubbles */
-.answer input {
-    width: 80%;
-    border: none;
-    background-color: transparent;
-    text-align: center;
-    outline: none;
-    white-space: pre-wrap; /* Allow for multiline text */
-    resize: vertical; /* Allow vertical resizing */
-    min-height: 40px; /* Set a minimum height */
+button {
+  padding: 10px 15px; /* More padding for a larger click area */
+  margin-right: 10px; /* Space between buttons */
+  border: none; /* Remove default border */
+  border-radius: 20px; /* More pronounced rounded corners */
+  font-size: 16px; /* Larger font size */
+  color: #ffffff; /* White text */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
-/* Centering the post question button */
-.post-question-btn {
-    display: block;
-    margin: 20px auto; /* Centers the button */
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
+button#postBtn {
+  background-color: #007bff; /* Blue, for posting */
+}
+
+button#addBtn {
+  background-color: #28a745; /* Green, for adding */
+}
+
+button:hover {
+  opacity: 0.9; /* Slight opacity change on hover */
+}
+
+.answer-box {
+  background-color: #f8f9fa; /* Slightly off-white background */
+  border: 2px dashed #007bff; /* Dashed border for emphasis */
+  border-radius: 5px; /* Rounded corners */
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.answer-content::before {
+  content: attr(data-placeholder);
+  display: block;
+  color: grey;
+}
+
+.answer-content:focus::before {
+  content: '';
+}
+
+.buttons {
+  margin-top: 10px;
+  text-align: center; /* Center the buttons */
 }
