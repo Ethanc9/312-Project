@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSE-312 Project</title>
-    <link rel="stylesheet" href="web.css">
+    <title>Post a Question</title>
 </head>
 <body>
-    <h1>This is our Website!</h1>
-    <br> <br> <br> <br> <br>
-    <hr>
-    
+    <h1>Post a Question</h1>
+    <form id="question-form">
+        <label for="question">Question:</label>
+        <input type="text" id="question" name="question" required>
+        <label for="answer">Answer:</label>
+        <input type="text" id="answer" name="answer" required>
+        <label for="correct-answer">Correct Answer:</label>
+        <input type="text" id="correct-answer" name="correct-answer" required>
+        <input type="submit" value="Post Question">
+    </form>
 </body>
 </html>

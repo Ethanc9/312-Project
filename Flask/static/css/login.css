@@ -1,0 +1,76 @@
+h1 {
+    text-shadow: none; /* Remove the text shadow */
+    color: black; /* Set the text color to black */
+    font-size: 16px; /* Adjust this value as needed */
+}
+
+form {
+    border: 10px; border-color: black;
+    margin: 20px;
+    font-size: 16px; /* Adjust this value as needed */
+    box-sizing: content-box ;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 25%; /* Adjust this value as needed */
+    height: 25px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+input[type="submit"] {
+    width: 80px;
+    height: 40px;
+    font-size: 16px; /* Adjust this value as needed */
+}
+
+#dark-mode {
+    display: none;
+}
+
+#dark-mode-label {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#dark-mode-label::before {
+    content: "🌙";
+}
+
+#dark-mode:checked + #dark-mode-label::before {
+    content: "☀️";
+}
+
+body p {
+    text-align: center; /* Centers the text of the paragraph */
+    margin-top: 20px; /* Adds some space above the paragraph */
+}
+
+button {
+    display: block;
+    margin: 20px auto; /* Centers the button horizontally */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border-radius: 20px; /* Gives the button rounded corners */
+    cursor: pointer; /* Changes the cursor to a pointer on hover */
+    font-size: 16px; /* Adjust font size as needed */
+    background-color: #007bff; /* Example background color */
+    color: white; /* Text color */
+    border: none; /* Removes the border */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
