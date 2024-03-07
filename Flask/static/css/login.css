@@ -1,76 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f2ef; /* Match the background color of the register page */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px; /* Match the max-width of the register page */
+    padding: 40px; /* Match the padding of the register form */
+    box-sizing: border-box;
+    background-color: #fff; /* Match the background color of the register form */
+    border-radius: 8px; /* Add border radius for the box effect */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
+}
+
 h1 {
-    text-shadow: none; /* Remove the text shadow */
-    color: black; /* Set the text color to black */
-    font-size: 16px; /* Adjust this value as needed */
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 form {
-    border: 10px; border-color: black;
-    margin: 20px;
-    font-size: 16px; /* Adjust this value as needed */
-    box-sizing: content-box ;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
 }
 
-input[type="text"], input[type="password"] {
-    width: 25%; /* Adjust this value as needed */
-    height: 25px;
-    font-size: 16px;
-    border-radius: 5px;
-    margin: 10px 0;
+label {
+    margin-bottom: 8px;
+}
+
+input {
     padding: 10px;
+    margin-bottom: 20px;
     border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 input[type="submit"] {
-    width: 80px;
-    height: 40px;
-    font-size: 16px; /* Adjust this value as needed */
-}
-
-#dark-mode {
-    display: none;
-}
-
-#dark-mode-label {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    background-color: #0a66c2;
+    color: #fff;
+    border: none;
     cursor: pointer;
-    font-size: 16px;
 }
 
-#dark-mode-label::before {
-    content: "🌙";
+input[type="submit"]:hover {
+    background-color: #004182;
 }
 
-#dark-mode:checked + #dark-mode-label::before {
-    content: "☀️";
-}
-
-body p {
-    text-align: center; /* Centers the text of the paragraph */
-    margin-top: 20px; /* Adds some space above the paragraph */
-}
-
-button {
-    display: block;
-    margin: 20px auto; /* Centers the button horizontally */
-    padding: 10px 20px; /* Adjust padding as needed */
-    border-radius: 20px; /* Gives the button rounded corners */
-    cursor: pointer; /* Changes the cursor to a pointer on hover */
-    font-size: 16px; /* Adjust font size as needed */
-    background-color: #007bff; /* Example background color */
-    color: white; /* Text color */
-    border: none; /* Removes the border */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
-}
-
-button:hover {
-    background-color: #0056b3; /* Darker shade for hover effect */
+p {
+    text-align: center;
+    margin-top: 20px;
 }

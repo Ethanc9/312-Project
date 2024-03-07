@@ -1,0 +1,12 @@
+/* Add or adjust styles as needed */
+.answer {
+    margin: 10px 0;
+}
+
+.post-question-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}

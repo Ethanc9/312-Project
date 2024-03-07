@@ -1,0 +1,49 @@
+/* Container for the question */
+.question-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Style for the question input */
+#question {
+    width: 50%; /* Adjust width as needed */
+    padding: 10px;
+    margin: 0 auto; /* Center the input */
+    display: block;
+    border-radius: 5px; /* Rounded edges */
+}
+
+/* Adjusting existing .answer class for rounded rectangles */
+.answer {
+    margin: 10px auto;
+    width: 60%; /* Adjust width as needed */
+    padding: 20px;
+    background-color: #f0f0f0; /* Light grey background */
+    border-radius: 5px; /* Rounded edges */
+    text-align: center;
+    display: block;
+}
+
+/* Style adjustments for the input fields within the answer bubbles */
+.answer input {
+    width: 80%;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+    outline: none;
+    white-space: pre-wrap; /* Allow for multiline text */
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 40px; /* Set a minimum height */
+}
+
+/* Centering the post question button */
+.post-question-btn {
+    display: block;
+    margin: 20px auto; /* Centers the button */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
