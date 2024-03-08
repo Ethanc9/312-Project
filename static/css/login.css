@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f2ef; /* Match the background color of the register page */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px; /* Match the max-width of the register page */
+    padding: 40px; /* Match the padding of the register form */
+    box-sizing: border-box;
+    background-color: #fff; /* Match the background color of the register form */
+    border-radius: 8px; /* Add border radius for the box effect */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="submit"] {
+    background-color: #0a66c2;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #004182;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
+}
