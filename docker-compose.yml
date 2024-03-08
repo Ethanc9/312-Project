@@ -3,10 +3,8 @@ services:
   mongo:
     image: mongo:7.0.0
     ports:
-      - '27018:27017'  # Changed host port to 27018 to avoid conflicts with local MongoDB instances
+      - '27017:27017'
   app:
-    build: ./flask
-    environment:
-      WAIT_HOSTS: mongo:27017  # This remains unchanged as it refers to the internal network name and port
+    build: ./Flask
     ports:
-      - '8000:8080'  # Changed host port to 8000 as requested
+      - '8080:8080'
