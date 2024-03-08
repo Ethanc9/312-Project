@@ -16,6 +16,10 @@ def home():
         return render_template('index.html', username=session['username'])
     return render_template('index.html')
 
+@app.route('/post-question', methods=['GET', 'POST'])
+def post_question():
+    return render_template('post-question.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def render_login():
     if request.method == 'POST':
@@ -51,14 +55,14 @@ def render_register():
 
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         users.insert_one({"username": username, "password": hashed_password})
-        return jsonify({"message": "User registered successfully"}), 201
+        return redirect(url_for('render_login'))
         
     return render_template('register.html')
 
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    response = redirect(url_for('home'))
+    response = redirect(url_for('render_login'))
     response.set_cookie('auth_token', '', expires=0)
     return response
 
