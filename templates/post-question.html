@@ -20,6 +20,27 @@
   <div id="answerContainer"></div>
 </div>
 <script>
+document.getElementById('postBtn').addEventListener('click', function() {
+    const question = document.getElementById('questionInput').value;
+    const answerBoxes = document.querySelectorAll('.answer-box');
+    const answers = Array.from(answerBoxes).map(box => box.textContent.trim()).filter(text => text !== '' && text !== 'Type your answer here...');
+
+    fetch('/post-question', { // Assuming your endpoint is '/post-question'
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question, answers }),
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = '/'; // Redirect to homepage on success
+        } else {
+            alert('Failed to post question. Please try again.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
   document.getElementById('addBtn').addEventListener('click', function() {
     // Limit to 5 answers
     const container = document.getElementById('answerContainer');

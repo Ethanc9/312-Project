@@ -13,6 +13,22 @@ body, html {
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
+    position: relative;
+}
+
+.user-info {
+    position: absolute;
+    top: 0;
+    right: 1%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.username {
+    margin-right: 1%; /* Adjust as needed */ 
+    font-size: 1.2rem;
+    color: white; /* Adjust color as needed */
 }
 
 .login-btn {
@@ -21,11 +37,11 @@ body, html {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 20px; /* Moves the logout button down */
 }
 
 .chat-container {
     margin: 20px;
-    /* Add more styling as needed */
 }
 
 .post-question-btn {
@@ -36,4 +52,14 @@ body, html {
     color: white;
     text-decoration: none;
     border-radius: 5px;
+}
+
+.image {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    width: 100px;
+    height: 100px;
+    background-image: url('../static/image/testing.jpg');
+    background-size: cover;
 }

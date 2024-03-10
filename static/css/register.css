@@ -1,18 +1,15 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f3f2ef;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body, html {
+    height: 100%;
     margin: 0;
 }
 
 .container {
-    width: 100%;
-    max-width: 600px;
-    padding: 0 20px;
-    box-sizing: border-box;
+    display: flex; /* Use flex to align items side by side */
+    justify-content: center; /* Center the items horizontally */
+    align-items: center; /* Center the items vertically */
+    height: 100vh; /* Full height of the viewport */
+    margin: auto;
+    flex-wrap: wrap; /* Allows items to wrap if the screen is too small */
 }
 
 .register-form {
@@ -20,6 +17,30 @@ body {
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px; /* Added margin for spacing */
+    /* Keep the registration form size consistent */
+    flex: 0 1 400px; /* flex-grow, flex-shrink, flex-basis */
+}
+
+.info-box {
+    background-color: #fff; /* Match the style of the registration form */
+    padding: 20px; /* Adjust padding as needed */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px; /* Added margin for spacing */
+    width: 300px; /* Set a fixed width for the info box */
+    flex: 0 1 300px; /* Prevent the box from growing but allow it to shrink if necessary */
+}
+
+/* Additional styling for the requirements list to ensure readability */
+.info-box ul {
+    list-style-type: none; /* Removes the default list bullet */
+    padding: 0;
+}
+
+.info-box li {
+    margin-bottom: 10px; /* Adds space between list items */
+    font-size: 14px; /* Adjust font size for readability */
 }
 
 h1 {
@@ -48,6 +69,11 @@ input[type="submit"] {
     color: #fff;
     border: none;
     cursor: pointer;
+}
+
+.error {
+    color: red;
+    font-size: 0.8em;
 }
 
 input[type="submit]:hover {

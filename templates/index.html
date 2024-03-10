@@ -2,22 +2,26 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="../static/css/home.css">
-    <!-- Ensure the path to your CSS file is correct -->
     ...
 </head>
 <body>
     <div class="header">
         <h1>CSE 312</h1>
         {% if 'auth_token' in request.cookies %}
-            <a href="/logout" class="login-btn">Logout</a>
+            <div class="user-info">
+                <span class="username">Welcome,{{ user_name }}</span>
+                <a href="/logout" class="login-btn">Logout</a>
+            </div>
         {% else %}
             <a href="/login" class="login-btn">Login</a>
         {% endif %}
     </div>
     <div class="chat-container">
-        <!-- Your chat UI here -->
         <a href="/post-question" class="post-question-btn">Post a Question</a>
     </div>
-    <script src="../static/script.js"></script>
+    <div class="image">
+        <img src="../static/images/kissing.jpg" alt="Your Image">
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
