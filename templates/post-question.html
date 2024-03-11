@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question and Answer Board</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/post-question.css') }}">
+</head>
+<body>
+
+<div class="container">
+  <div class="question-box">
+    <textarea id="questionInput" placeholder="Type your question here..."></textarea>
+    <div class="answer-box"></div>
+    <div class="buttons">
+      <button id="addBtn">Add Answer</button>
+      <button id="postBtn">Post Question</button>
+    </div>
+    <div class="correct-answer-selection">
+      <label for="correctAnswer">Select the correct answer:</label>
+      <select id="correctAnswer">
+        <!-- Options will be dynamically added based on the number of answers -->
+      </select>
+    </div>
+  </div>
+  <div id="answerContainer"></div>
+</div>
+<script src="{{ url_for('static', filename='js/questionScript.js') }}"></script>
+</body>
+</html>
