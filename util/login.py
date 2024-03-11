@@ -22,13 +22,13 @@ def login(username, password):
             session['username'] = username  # Store username in session for easy retrieval
             
             # Redirect to the home page and set the auth_token cookie
-            response = redirect(url_for('home'))
+            response = redirect(url_for('home_route'))
             ten_years_in_seconds = 10 * 365 * 24 * 60 * 60
             response.set_cookie("auth_token", token, httponly=True, max_age=ten_years_in_seconds)
             return response
         else:
             # If the password does not match, redirect to the login page
-            return redirect(url_for('render_login'))
+            return redirect(url_for('login_route'))
     else:
         # If the user does not exist, also redirect to the login page
-        return redirect(url_for('render_login'))
+        return redirect(url_for('login_route'))

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
+from util.post_question import insert_question
 from util.register import register
 from util.login import login
 from pymongo import MongoClient
@@ -14,7 +15,7 @@ users = db["users"]
 questions = db["questions"]
 
 @app.route('/')
-def home():
+def home_route():
     if 'username' in session:
         return render_template('index.html', user_name=session['username'])
     return render_template('index.html')
@@ -23,38 +24,20 @@ def home():
 def post_question():
     if request.method == 'POST':
         data = request.json
-        user_id = session.get('user_id')  # Assuming session management includes user_id
-        question_text = data['question']
+        print(data)
+        username = session.get('username')
+        question = data['question']
         answers = data['answers']
-        
-        # Insert the question and answers into the database
-        question_id = insert_question(user_id, question_text, answers)
-        
-        return jsonify({'success': True, 'redirect': url_for('home')})
+        correct_answer = int(data['correctAnswer'])  # Convert to int for safety
+        # Validate the right_answer index
+        if correct_answer >= len(answers):
+            return jsonify({'success': False, 'error': 'correct_answer correct answer selection'}), 400
+        insert_question(username, question, answers, correct_answer)
+        return jsonify({'success': True, 'redirect': url_for('home_route')})
     return render_template('post-question.html')
 
-def insert_question(user_id, question_text, answers):
-    """
-    Inserts a question along with its answers into the database.
-
-    Parameters:
-    - user_id: The ID of the user posting the question.
-    - question_text: The text of the question.
-    - answers: A list of answers to the question.
-    """
-    question_id = ObjectId()  # Generates a unique ID for the question
-    question_document = {
-        "_id": question_id,
-        "user_id": user_id,
-        "question_text": question_text,
-        "answers": answers,
-        "posted_at": datetime.datetime.utcnow()  # Stores the current time
-    }
-    questions.insert_one(question_document)
-    return question_id
-
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login_route():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -65,15 +48,15 @@ def login():
 # Flask app setup and other routes remain unchanged
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def register_route():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-        message, status_code = register(username, password, confirm_password)
+        message, status_code = register_route(username, password, confirm_password)
         
         if status_code == 201:
-            response = make_response(redirect(url_for('render_login')))
+            response = make_response(redirect(url_for('login_route')))
             response.set_cookie('registration_success', 'true', max_age=10) 
             return response
         else:
@@ -87,9 +70,9 @@ def register():
         return render_template('register.html', alert_script=alert_script)
 
 @app.route('/logout')
-def logout():
+def logout_route():
     session.pop('username', None)
-    response = redirect(url_for('home'))
+    response = redirect(url_for('home_route'))
     response.set_cookie('auth_token', '', expires=0)
     return response
 
