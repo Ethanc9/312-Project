@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
-from util.post_question import insert_question
+from util.post_question import insert_question, output_questions
 from util.register import register
 from util.login import login
 from pymongo import MongoClient
@@ -16,9 +16,25 @@ questions = db["questions"]
 
 @app.route('/')
 def home_route():
+    print("MADE IT")
     if 'username' in session:
         return render_template('index.html', user_name=session['username'])
     return render_template('index.html')
+
+@app.route('/output_question', methods=['POST'])
+def post_questions():
+    auth_token = request.cookies.get('authToken')
+    with open('templates/answer.html', 'rb') as MyFile:
+            bodyStr = MyFile.read() 
+        
+    questions = output_questions()
+
+    print(questions)
+    
+    bodyStr = bodyStr.replace(b'{{answers}}', questions.encode())
+
+    print(bodyStr)
+    return bodyStr
 
 @app.route('/post-question', methods=['GET', 'POST'])
 def post_question():
@@ -41,7 +57,12 @@ def login_route():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        return login(username, password)
+
+        status_code = login_route(username, password)
+        if status_code == 200:
+            response = make_response(redirect(url_for('index.html')))
+            response.set_cookie('authToken', 'true', max_age=3600)
+            return login(username, password)
     return render_template('login.html')
 
 
