@@ -16,55 +16,15 @@
       <button id="addBtn">Add Answer</button>
       <button id="postBtn">Post Question</button>
     </div>
+    <div class="correct-answer-selection">
+      <label for="correctAnswer">Select the correct answer:</label>
+      <select id="correctAnswer">
+        <!-- Options will be dynamically added based on the number of answers -->
+      </select>
+    </div>
   </div>
   <div id="answerContainer"></div>
 </div>
-<script>
-  document.getElementById('addBtn').addEventListener('click', function() {
-    // Limit to 5 answers
-    const container = document.getElementById('answerContainer');
-    if (container.children.length >= 5) {
-        alert('A maximum of 5 answers are allowed.');
-        return;
-    }
-
-    // Create a new answer box
-    const newAnswerBox = document.createElement('div');
-    newAnswerBox.classList.add('answer-box');
-    newAnswerBox.contentEditable = true; // Make it editable, or use <input> or <textarea>
-    newAnswerBox.textContent = 'Type your answer here...'; // Placeholder text
-    newAnswerBox.style.border = '1px solid #ccc'; // Basic styling, adjust as needed
-    newAnswerBox.style.margin = '10px 0';
-    newAnswerBox.style.padding = '5px';
-
-    // Create a delete button
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'X';
-    deleteButton.style.float = 'right'; // Align the button to the right
-    deleteButton.addEventListener('click', function() {
-        container.removeChild(newAnswerBox);
-    });
-
-    // Append the delete button to the answer box
-    newAnswerBox.appendChild(deleteButton);
-
-    // Optional: Clear placeholder text on focus
-    newAnswerBox.addEventListener('focus', function() {
-        if (this.textContent === 'Type your answer here...') {
-            this.textContent = '';
-        }
-    });
-
-    // Optional: Restore placeholder text if empty on blur
-    newAnswerBox.addEventListener('blur', function() {
-        if (this.textContent.trim() === '') {
-            this.textContent = 'Type your answer here...';
-        }
-    });
-
-    // Append the new answer box to the container
-    container.appendChild(newAnswerBox);
-});
-</script>
+<script src="{{ url_for('static', filename='js/questionScript.js') }}"></script>
 </body>
 </html>
