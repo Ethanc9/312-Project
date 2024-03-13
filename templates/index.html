@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../static/css/home.css">
+    ...
+</head>
+<body>
+    <div class="header">
+        <h1>CSE 312</h1>
+        {% if 'auth_token' in request.cookies %}
+            <div class="user-info">
+                <span class="username">Welcome,{{ user_name }}</span>
+                <a href="/logout" class="login-btn">Logout</a>
+            </div>
+        {% else %}
+            <a href="/login" class="login-btn">Login</a>
+        {% endif %}
+    </div>
+    <div class="chat-container">
+        <a href="/post-question" class="post-question-btn">Post a Question</a>
+    </div>
+    <div class="image">
+        <img src="../static/images/kissing.jpg" alt="Your Image">
+    </div>
+    Show_questions:
+        <form action="/answer-question" method="post" enctype="application/x-www-form-urlencoded">
+            <input type="submit" value="Show Questions">
+        </form>
+    <script src="script.js"></script>
+</body>
+</html>
