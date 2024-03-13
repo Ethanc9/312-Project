@@ -14,7 +14,7 @@ document.getElementById('postBtn').addEventListener('click', function() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = 'index.html';
+            window.location.href = '/';
         } else {
             alert('Failed to post question. Please try again.');
         }
