@@ -32,18 +32,22 @@ def answer_question():
 @app.route('/post-question', methods=['GET', 'POST'])
 def post_question():
     if request.method == 'POST':
-        data = request.json
-        print(data)
         username = session.get('username')
+        if not username:
+            # Redirect to login if the user is not logged in
+            return redirect(url_for('login_route'))
+
+        data = request.json
         question = data['question']
         answers = data['answers']
-        correct_answer = int(data['correctAnswer'])  # Convert to int for safety
-        # Validate the right_answer index
+        correct_answer = data['correctAnswer']
+
         if correct_answer >= len(answers):
-            return jsonify({'success': False, 'error': 'correct_answer correct answer selection'}), 400
+            # Handle error: correct answer index out of range
+            return "Error: Correct answer index out of range.", 400
+
         insert_question(username, question, answers, correct_answer)
-        response = make_response(redirect(url_for('home_route')))
-        return response
+        return redirect(url_for('home_route'))
     return render_template('post-question.html')
 
 
