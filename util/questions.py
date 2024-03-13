@@ -14,8 +14,9 @@ def insert_question(username, question, answers, correct_answer):
         "username": username,
         "question": question,
         "answers": answers,
-        "correct_answer": correct_answer,  # Store the index of the right answer
-        "posted_at": datetime.datetime.utcnow()
+        "correct_answer": correct_answer,
+        "posted_at": datetime.datetime.utcnow(),
+        "answer_count": 0  
     }
     questions.insert_one(question_document)
     return question_id
@@ -24,7 +25,9 @@ def output_questions():
     questions_list = list(questions.find({}))
     for question in questions_list:
         question['_id'] = str(question['_id'])
-    print(questions_list)  # Convert ObjectId to string for JSON compatibility
+        if 'answer_count' not in question:
+            question['answer_count'] = 0  # Default to 0 if not present
+    print(questions_list)
     return questions_list
 
 
@@ -40,7 +43,7 @@ def validate_answer(username, question_id, answer_index):
         
         # Increment the answer count
         questions.update_one({"_id": question_id}, {"$inc": {"answer_count": 1}})
-        
+        print("Im here")
         try:
             submissions.insert_one({
                 "username": username,
