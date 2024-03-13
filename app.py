@@ -15,8 +15,11 @@ users = db["users"]
 questions = db["questions"]
 submissions = db["submissions"]
 
-@app.route('/')
+
+@app.route('/', methods=['GET', 'POST'])
 def home_route():
+    if request.method == 'GET':
+        return render_template('index.html')
     if 'username' in session:
         return render_template('index.html', user_name=session['username'])
     return render_template('index.html')
@@ -39,26 +42,35 @@ def post_question():
         if correct_answer >= len(answers):
             return jsonify({'success': False, 'error': 'correct_answer correct answer selection'}), 400
         insert_question(username, question, answers, correct_answer)
-        return jsonify({'success': True, 'redirect': url_for('home_route')})
+        response = make_response(redirect(url_for('home_route')))
+        return response
     return render_template('post-question.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_route():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
-        user, status_code = login(username, password)
-        if status_code == 200:
-            session['username'] = user['username']
+        authenticated, token = login(username, password)
+        if authenticated:
+            print("authenticated")
+            # Authentication successful, set session and cookie
+            session['username'] = username
             response = make_response(redirect(url_for('home_route')))
-            response.set_cookie('authToken', 'true', max_age=3600)
+            ten_years_in_seconds = 10 * 365 * 24 * 60 * 60
+            response.set_cookie("auth_token", token, httponly=True, max_age=ten_years_in_seconds)
             return response
-    return render_template('login.html')
-
+        else:
+            print("Enter Login")
+            # Authentication failed, redirect to the login page
+            return redirect(url_for('login_route'))
+    else:
+        print("Enter Login1")
+        # Handle GET request by rendering the login form
+        return render_template('login.html')
 
 # Flask app setup and other routes remain unchanged
-
 @app.route('/register', methods=['GET', 'POST'])
 def register_route():
     if request.method == 'POST':

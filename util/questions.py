@@ -41,14 +41,16 @@ def validate_answer(username, question_id, answer_index):
         # Increment the answer count
         questions.update_one({"_id": question_id}, {"$inc": {"answer_count": 1}})
         
-        # Save the user's submission
-        submissions = db["submissions"]  # Assuming you have a submissions collection
-        submissions.insert_one({
-            "username": username,
-            "questionId": str(question_id),  # Convert ObjectId to string for storage
-            "chosenAnswer": answer_index,
-            "submittedAt": datetime.datetime.utcnow()  # Optionally store the submission time
-        })
+        try:
+            submissions.insert_one({
+                "username": username,
+                "questionId": str(question_id),  # Convert ObjectId to string for storage
+                "chosenAnswer": answer_index,
+                "submittedAt": datetime.datetime.utcnow()  # Optionally store the submission time
+            })
+        except Exception as e:
+            print(f"Error inserting submission: {e}")
+            # Optionally, return an error response or raise the exception
         
         return {"message": message, "isCorrect": is_correct}
     else:
