@@ -1,8 +1,9 @@
 document.getElementById('postBtn').addEventListener('click', function() {
     const question = document.getElementById('questionInput').value;
     const answerBoxes = document.querySelectorAll('.answer-box');
+
     const answers = Array.from(answerBoxes).map(box => box.textContent.trim()).filter(text => text !== '' && text !== 'Type your answer here...');
-    const correctAnswer = document.getElementById('correctAnswer').value + 1;
+    const correctAnswer = +document.getElementById('correctAnswer').value;
 
     fetch('/post-question', {
         method: 'POST',
@@ -13,7 +14,7 @@ document.getElementById('postBtn').addEventListener('click', function() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = '/';
+            window.location.href = 'index.html';
         } else {
             alert('Failed to post question. Please try again.');
         }
@@ -68,7 +69,7 @@ function updateCorrectAnswerOptions() {
     answerBoxes.forEach((box, index) => {
         const option = document.createElement('option');
         option.value = index;
-        option.textContent = `Answer ${index + 1}`;
+        option.textContent = `Answer ${index+1}`; 
         correctAnswerSelect.appendChild(option);
     });
 }
