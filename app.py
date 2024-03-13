@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
-from util.post_question import insert_question, output_questions
+from util.questions import *
 from util.register import register
 from util.login import login
 from pymongo import MongoClient
@@ -13,28 +13,18 @@ client = MongoClient("mongo")
 db = client["cse312"]
 users = db["users"]
 questions = db["questions"]
+submissions = db["submissions"]
 
 @app.route('/')
 def home_route():
-    print("MADE IT")
     if 'username' in session:
         return render_template('index.html', user_name=session['username'])
     return render_template('index.html')
 
-@app.route('/output_question', methods=['POST'])
-def post_questions():
-    auth_token = request.cookies.get('authToken')
-    with open('templates/answer.html', 'rb') as MyFile:
-            bodyStr = MyFile.read() 
-        
-    questions = output_questions()
-
-    print(questions)
-    
-    bodyStr = bodyStr.replace(b'{{answers}}', questions.encode())
-
-    print(bodyStr)
-    return bodyStr
+@app.route('/answer-question', methods=['GET', 'POST'])
+def answer_question():
+    questions_data = output_questions()
+    return render_template('answer.html', questions=questions_data)
 
 @app.route('/post-question', methods=['GET', 'POST'])
 def post_question():
@@ -58,11 +48,12 @@ def login_route():
         username = request.form['username']
         password = request.form['password']
 
-        status_code = login_route(username, password)
+        user, status_code = login(username, password)
         if status_code == 200:
-            response = make_response(redirect(url_for('index.html')))
+            session['username'] = user['username']
+            response = make_response(redirect(url_for('home_route')))
             response.set_cookie('authToken', 'true', max_age=3600)
-            return login(username, password)
+            return response
     return render_template('login.html')
 
 
@@ -74,7 +65,8 @@ def register_route():
         username = request.form['username']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-        message, status_code = register_route(username, password, confirm_password)
+
+        message, status_code = register(username, password, confirm_password)
         
         if status_code == 201:
             response = make_response(redirect(url_for('login_route')))
@@ -96,6 +88,21 @@ def logout_route():
     response = redirect(url_for('home_route'))
     response.set_cookie('auth_token', '', expires=0)
     return response
+
+@app.route('/validate-answer', methods=['POST'])
+def validate_answer_route():
+    data = request.json
+    username = session.get('username')  # Assuming the user's username is stored in the session
+    question_id = data['questionId']
+    answer_index = data['answerIndex']
+    
+    # Call the validate_answer function from util/questions.py
+    result = validate_answer(username, question_id, answer_index)
+    
+    if "isCorrect" in result:
+        return jsonify(result)
+    else:
+        return jsonify(result), 404
 
 @app.after_request
 def add_header(response):

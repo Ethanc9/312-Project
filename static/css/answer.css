@@ -1,0 +1,30 @@
+.question {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.answer-option {
+    display: block;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.answer-option input[type="radio"] {
+    margin-right: 10px;
+}
+
+button[type="submit"] {
+    margin-top: 10px;
+    padding: 5px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
