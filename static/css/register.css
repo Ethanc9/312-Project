@@ -4,12 +4,12 @@ body, html {
 }
 
 .container {
-    display: flex; /* Use flex to align items side by side */
-    justify-content: center; /* Center the items horizontally */
-    align-items: center; /* Center the items vertically */
-    height: 100vh; /* Full height of the viewport */
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
     margin: auto;
-    flex-wrap: wrap; /* Allows items to wrap if the screen is too small */
+    flex-wrap: wrap; 
 }
 
 .register-form {
@@ -17,18 +17,17 @@ body, html {
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 10px; /* Added margin for spacing */
-    /* Keep the registration form size consistent */
-    flex: 0 1 400px; /* flex-grow, flex-shrink, flex-basis */
+    margin: 10px;
+    flex: 0 1 400px; 
 }
 
 .info-box {
-    background-color: #fff; /* Match the style of the registration form */
-    padding: 20px; /* Adjust padding as needed */
+    background-color: #fff; 
+    padding: 20px; 
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 10px; /* Added margin for spacing */
-    width: 300px; /* Set a fixed width for the info box */
+    margin: 10px; 
+    width: 300px; 
     flex: 0 1 300px; /* Prevent the box from growing but allow it to shrink if necessary */
 }
 

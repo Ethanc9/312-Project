@@ -43,7 +43,6 @@ def validate_answer(username, question_id, answer_index):
         
         # Increment the answer count
         questions.update_one({"_id": question_id}, {"$inc": {"answer_count": 1}})
-        print("Im here")
         try:
             submissions.insert_one({
                 "username": username,
