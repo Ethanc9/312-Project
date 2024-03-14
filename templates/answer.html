@@ -16,6 +16,8 @@
         {% for question in questions %}
         <div class="question">
             <p>Q: {{ question.question }}</p>
+            <!-- Display who posted the question -->
+            <p>Posted by: {{ question.username }}</p>
             <!-- Display the answer count -->
             <p>Answers submitted: {{ question.answer_count }}</p>
             <form onsubmit="submitAnswer(event, this, '{{ question._id }}'); return false;">

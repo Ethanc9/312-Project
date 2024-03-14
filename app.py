@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
+from markupsafe import escape
 from util.questions import *
-from util.register import register
-from util.login import login
+from util.register import *
+from util.login import *
 from pymongo import MongoClient
 from bson.objectid import ObjectId  # For generating unique IDs
-import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -18,11 +18,11 @@ submissions = db["submissions"]
 
 @app.route('/', methods=['GET', 'POST'])
 def home_route():
-    if request.method == 'GET':
-        return render_template('index.html')
-    if 'username' in session:
-        return render_template('index.html', user_name=session['username'])
-    return render_template('index.html')
+    user_name = None
+    if 'auth_token' in request.cookies:
+        user_name = get_username_from_token(request.cookies['auth_token'])
+    return render_template('index.html', user_name=user_name)
+
 
 @app.route('/answer-question', methods=['GET', 'POST'])
 def answer_question():
@@ -38,8 +38,8 @@ def post_question():
             return redirect(url_for('login_route'))
 
         data = request.json
-        question = data['question']
-        answers = data['answers']
+        question = escape(data['question'])  # HTML escape the question text
+        answers = [escape(answer) for answer in data['answers']]  # Optionally escape answers too
         correct_answer = data['correctAnswer']
 
         if correct_answer >= len(answers):

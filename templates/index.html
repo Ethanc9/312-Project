@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="../static/css/home.css">
-    ...
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 </head>
 <body>
     <div class="header">
@@ -20,12 +20,10 @@
         <a href="/post-question" class="post-question-btn">Post a Question</a>
     </div>
     <div class="image">
-        <img src="../static/images/kissing.jpg" alt="Your Image">
-    </div>
+        <img src="{{ url_for('static', filename='images/UB.PNG') }}" alt="Your Image">    </div>
     Show_questions:
         <form action="/answer-question" method="post" enctype="application/x-www-form-urlencoded">
             <input type="submit" value="Show Questions">
         </form>
-    <script src="script.js"></script>
 </body>
 </html>

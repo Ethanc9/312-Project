@@ -29,6 +29,9 @@ document.getElementById('addBtn').addEventListener('click', function() {
         return;
     }
 
+    const answerContainer = document.createElement('div');
+    answerContainer.classList.add('answer-container');
+
     const newAnswerBox = document.createElement('div');
     newAnswerBox.classList.add('answer-box');
     newAnswerBox.contentEditable = true;
@@ -37,14 +40,14 @@ document.getElementById('addBtn').addEventListener('click', function() {
     newAnswerBox.style.padding = '5px';
 
     const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'X';
+    deleteButton.textContent = 'Remove';
     deleteButton.style.float = 'right';
     deleteButton.addEventListener('click', function() {
-        container.removeChild(newAnswerBox);
-        updateCorrectAnswerOptions();
+        answerContainer.remove();
     });
 
-    newAnswerBox.appendChild(deleteButton);
+    answerContainer.appendChild(newAnswerBox);
+    answerContainer.appendChild(deleteButton);
 
     newAnswerBox.addEventListener('focus', function() {
         if (this.textContent === 'Type your answer here...') {
@@ -58,7 +61,7 @@ document.getElementById('addBtn').addEventListener('click', function() {
         }
     });
 
-    container.appendChild(newAnswerBox);
+    container.appendChild(answerContainer);
     updateCorrectAnswerOptions();
 });
 
