@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify, current_app, send_from_directory
+import os
 from markupsafe import escape
 from util.questions import *
 from util.register import *
@@ -22,6 +23,19 @@ def home_route():
     if 'auth_token' in request.cookies:
         user_name = get_username_from_token(request.cookies['auth_token'])
     return render_template('index.html', user_name=user_name)
+
+
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    return send_from_directory(os.path.join(app.root_path, 'static', 'css'), filename)
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    return send_from_directory(os.path.join(app.root_path, 'static', 'js'), filename)
+
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'), filename)
 
 
 @app.route('/answer-question', methods=['GET', 'POST'])
