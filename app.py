@@ -68,8 +68,8 @@ def post_question():
 @app.route('/login', methods=['GET', 'POST'])
 def login_route():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = escape(request.form['username'])
+        password = escape(request.form['password'])
         authenticated, token = login(username, password)
         if authenticated:
             print("authenticated")
