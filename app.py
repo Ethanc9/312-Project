@@ -20,12 +20,6 @@ users = db["users"]
 questions = db["questions"]
 submissions = db["submissions"]
 
-@app.before_request
-def before_request():
-    if not request.is_secure:
-        url = request.url.replace('http://', 'https://', 1)
-        code = 301
-        return redirect(url, code=code)
 
 @socketio.on('connect')
 def ws_connect():
@@ -165,5 +159,4 @@ def add_header(response):
 
 if __name__ == '__main__':
     #app.run(debug=True, port=8080, host = '0.0.0.0')
-    socketio.run(app, ssl_context=('cert.pem', 'key.pem'), allow_unsafe_werkzeug=True, port=8080, host='0.0.0.0')
-
+    socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
