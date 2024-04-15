@@ -1,12 +1,14 @@
 version: "3.3"
 services:
-  mongo:
-    image: mongo:7.0.0
-    ports:
-      - '27017:27017'
+  # mongo:  # This service can be commented out or removed
+  #   image: mongo:7.0.0
+  #   ports:
+  #     - '27017:27017'
   app:
     build: .
     environment:
-      WAIT_HOSTS: mongo:27017
+      WAIT_HOSTS: mongo:27017  # Update this if needed to point to the DigitalOcean MongoDB URL
+      DATABASE_URL: ${DATABASE_URL}
+      CA_CERT: ${CA_CERT}
     ports:
       - '8080:8080'
