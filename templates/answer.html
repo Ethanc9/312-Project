@@ -70,5 +70,38 @@
             }
         }
         </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+        
+    });
+
+    
+
+    // function update_Questions(){
+    //     socket.emit('message', {data: 'updating questions...'})
+    // }
+    // setInterval(update_Questions, 2000);
+
+    socket.on('update_question', function(new_question) {
+        console.log(new_question);
+        questionJSON = JSON.parse(new_question);
+        const oldquestions = document.getElementById("questions-container");
+        console.log(questionJSON.answers);
+        
+        oldquestions.innerHTML += "<div class='question'>\r\n" + "<p>Q: " + questionJSON.question + "</p>" + "<!-- Display who posted the question -->\r\n" + "<p>Posted by: "+ questionJSON.username +"</p>" + "<!-- Display the answer count -->\r\n"+ "<p>Answers submitted: " + questionJSON.answer_count + "</p>\r\n" + "<form onsubmit='submitAnswer(event, this, " + questionJSON._id + "'); return false;'>\r\n{% for answer in "+ questionJSON.answers +"%}\r\n<label class='answer-option'>" + "<input type='radio' name='answer-" + questionJSON._id + "'value='" + questionJSON.correct_answer + " '>\r\n" + questionJSON.answers[questionJSON.correct_answer] + "</label>\r\n{% endfor %}\r\n<button type='submit'>Submit Answer</button>\r\n</form>\r\n</div>"
+            
+        
+        // startinghtml = startinghtml.replace('questions', new_questions)
+        // console.log(startinghtml)
+        // oldquestions.innerHTML = startinghtml
+    });
+
+
+</script>
+
 </body>
 </html>

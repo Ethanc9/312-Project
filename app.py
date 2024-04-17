@@ -6,9 +6,13 @@ from util.register import *
 from util.login import *
 from pymongo import MongoClient
 from bson.objectid import ObjectId  # For generating unique IDs
+from flask_socketio import SocketIO, send, emit
+import json
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+socketio = SocketIO(app)
 
 client = MongoClient("mongo")
 db = client["cse312"]
@@ -16,6 +20,20 @@ users = db["users"]
 questions = db["questions"]
 submissions = db["submissions"]
 
+
+@socketio.on('connect')
+def ws_connect():
+    print('connected')
+
+@socketio.on('message')
+def ws_sendquestion(msg):
+    print('questions upated')
+    questions_data = output_questions()
+    for i in questions_data:
+        del i['posted_at']
+    questions_data = json.dumps(questions_data[len(questions_data)-1])
+    print(questions_data)
+    emit('update_question', questions_data, broadcast=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def home_route():
@@ -140,5 +158,5 @@ def add_header(response):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080, host = '0.0.0.0')
-
+    #app.run(debug=True, port=8080, host = '0.0.0.0')
+    socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')

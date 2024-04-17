@@ -21,9 +21,29 @@
     </div>
     <div class="image">
         <img src="{{ url_for('static', filename='images/UB.PNG') }}" alt="Your Image">    </div>
-    Show_questions:
+        <div class="show-questiontext"> Show_questions:</div>
+    <div class="show-question">
         <form action="/answer-question" method="post" enctype="application/x-www-form-urlencoded">
             <input type="submit" value="Show Questions">
         </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+        socket.send('NEW QUESTION SENT TO SEVER')
+    });
+
+    socket.on('update_question', function(new_questions) {
+        socket.emit('my event', {data: new_questions});
+        
+    });
+
+
+    
+    
+</script>
 </body>
 </html>
