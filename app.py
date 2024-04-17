@@ -78,7 +78,13 @@ def post_question():
             # Handle error: correct answer index out of range
             return "Error: Correct answer index out of range.", 400
 
-        insert_question(username, question, answers, correct_answer)
+        image_path = None
+        if 'image' in data:
+            image_data = data['image']
+            print("@##@@@@@@@")
+            print("hello")
+
+        insert_question(username, question, answers, correct_answer, image_path)
         return redirect(url_for('home_route'))
     return render_template('post-question.html')
 
@@ -158,5 +164,5 @@ def add_header(response):
     return response
 
 if __name__ == '__main__':
-    #app.run(debug=True, port=8080, host = '0.0.0.0')
-    socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
+    app.run(debug=True, port=8080, host = '0.0.0.0')
+    #socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
