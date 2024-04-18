@@ -15,7 +15,13 @@
     <div id="questions-container">
         {% for question in questions %}
         <div class="question">
+            {% if question.image_path %}
+            <p>Q:</p>
+            <img src="{{ question.image_path }}" alt="Question Image" class="question-image">
+            {% endif %}
+            {% if question.question %}
             <p>Q: {{ question.question }}</p>
+            {% endif %}
             <!-- Display who posted the question -->
             <p>Posted by: {{ question.username }}</p>
             <!-- Display the answer count -->

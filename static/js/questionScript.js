@@ -1,16 +1,43 @@
 document.getElementById('postBtn').addEventListener('click', function() {
     const question = document.getElementById('questionInput').value;
     const answerBoxes = document.querySelectorAll('.answer-box');
+    const imageInput = document.getElementById('image');
+    const imageFile = imageInput.files[0];
+    
+    if (!question && !imageFile) {
+        alert('Please provide a question or upload an image.');
+        return;
+    }
 
     const answers = Array.from(answerBoxes).map(box => box.textContent.trim()).filter(text => text !== '' && text !== 'Type your answer here...');
     const correctAnswer = +document.getElementById('correctAnswer').value;
 
+    const postData = {
+        question: question,
+        answers: answers,
+        correctAnswer: correctAnswer
+    };
+
+    // If an image file is uploaded, add it to the postData
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            postData.image = event.target.result;
+            sendPostData(postData);
+        };
+        reader.readAsDataURL(imageFile);
+    } else {
+        sendPostData(postData);
+    }
+});
+
+function sendPostData(postData) {
     fetch('/post-question', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question, answers, correctAnswer }),
+        body: JSON.stringify(postData),
     })
     .then(response => {
         if (response.ok) {
@@ -20,7 +47,7 @@ document.getElementById('postBtn').addEventListener('click', function() {
         }
     })
     .catch(error => console.error('Error:', error));
-});
+}
 
 document.getElementById('addBtn').addEventListener('click', function() {
     const container = document.getElementById('answerContainer');
