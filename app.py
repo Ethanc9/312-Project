@@ -8,6 +8,8 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId  # For generating unique IDs
 from flask_socketio import SocketIO, send, emit
 import json
+import uuid
+import base64
 
 
 app = Flask(__name__)
@@ -20,6 +22,38 @@ users = db["users"]
 questions = db["questions"]
 submissions = db["submissions"]
 
+UPLOAD_FOLDER = os.path.join('static', 'images')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def generate_unique_filename(filename):
+    # Extract the file extension from the image data
+    ext = filename.split('/')[1]
+    # Generate a unique filename using UUID
+    unique_filename = str(uuid.uuid4()) + '.'+ ext
+    return unique_filename
+
+def allowed_file(filename):
+    return filename.split('/')[1] in ALLOWED_EXTENSIONS
+
+def save_image(image_data, filename):
+    # Define the directory where you want to save the images
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    
+    # Create the directory if it doesn't exist
+    os.makedirs(upload_folder, exist_ok=True)
+    
+    # Generate a unique filename for the image
+    filename = generate_unique_filename(filename)
+    
+    # Combine the directory and filename to get the full path
+    image_path = os.path.join(upload_folder, filename)
+    
+    # Save the image data to the specified path
+    with open(image_path, 'wb') as f:
+        f.write(image_data)
+    
+    return image_path
 
 @socketio.on('connect')
 def ws_connect():
@@ -77,12 +111,19 @@ def post_question():
         if correct_answer >= len(answers):
             # Handle error: correct answer index out of range
             return "Error: Correct answer index out of range.", 400
-
+        
         image_path = None
         if 'image' in data:
             image_data = data['image']
-            print("@##@@@@@@@")
-            print("hello")
+            parts = image_data.split(';base64,')
+            if len(parts) == 2:
+                data_type, base64_str = parts
+                # Decode the base64 string
+                image_data = base64.b64decode(base64_str)
+                filename = data_type.split(':')[1]
+                if allowed_file(filename):
+                    print("HELLOOO")
+                    image_path = save_image(image_data, filename)
 
         insert_question(username, question, answers, correct_answer, image_path)
         return redirect(url_for('home_route'))
