@@ -5,6 +5,7 @@ services:
   app:
     build: .
     environment:
+      DADATABASE_URLta: mongodb+srv://doapps-afb311fd-d099-450f-8e2c-36037251263a:6Bo745J2A13VcPa8@db-mongodb-nyc3-29718-fe91ad73.mongo.ondigitalocean.com/admin?authSource=admin&tls=true
       WAIT_HOSTS: mongo:27017
     ports:
       - '8080:8080'
