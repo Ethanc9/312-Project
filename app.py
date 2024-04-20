@@ -10,6 +10,8 @@ from flask_socketio import SocketIO, send, emit
 import json
 import uuid
 import base64
+import uuid
+import base64
 
 
 app = Flask(__name__)
@@ -205,5 +207,6 @@ def add_header(response):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080, host = '0.0.0.0')
-    #socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
+    #app.run(debug=True, port=8080, host = '0.0.0.0')
+    socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
+
