@@ -7,7 +7,7 @@ db = client["cse312"]
 questions = db["questions"]
 submissions = db["submissions"]
 
-def insert_question(username, question, answers, correct_answer):
+def insert_question(username, question, answers, correct_answer, image_path: None):
     question_id = ObjectId()  
     question_document = {
         "_id": question_id,
@@ -16,7 +16,8 @@ def insert_question(username, question, answers, correct_answer):
         "answers": answers,
         "correct_answer": correct_answer,
         "posted_at": datetime.datetime.utcnow(),
-        "answer_count": 0  
+        "answer_count": 0,  
+        "image_path": image_path
     }
     questions.insert_one(question_document)
     return question_id
