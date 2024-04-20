@@ -84,7 +84,6 @@
         console.log(new_question);
         const questionJSON = JSON.parse(new_question);
         const oldquestions = document.getElementById("questions-container");
-
         // Check if the question already exists to prevent duplication
         if (!document.getElementById(`question-${questionJSON._id}`)) {
             let newQuestionHTML = `<div class='question' id='question-${questionJSON._id}'>
@@ -100,13 +99,10 @@
                     ${answer}
                 </label>`;
             });
-
             newQuestionHTML += `<button type='submit'>Submit Answer</button></form></div>`;
-
             oldquestions.innerHTML += newQuestionHTML;
         }
     });
-
 
 </script>
 
