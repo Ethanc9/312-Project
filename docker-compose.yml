@@ -1,14 +1,9 @@
 version: "3.3"
 services:
-  # mongo:  # This service can be commented out or removed
-  #   image: mongo:7.0.0
-  #   ports:
-  #     - '27017:27017'
   app:
     build: .
     environment:
       WAIT_HOSTS: mongo:27017  # Update this if needed to point to the DigitalOcean MongoDB URL
-      DATABASE_URL: ${DATABASE_URL}
-      CA_CERT: ${CA_CERT}
+      DATABASE_URL: mongodb+srv://doapps-afb311fd-d099-450f-8e2c-36037251263a:6Bo745J2A13VcPa8@db-mongodb-nyc3-29718-fe91ad73.mongo.ondigitalocean.com/admin?authSource=admin&tls=true
     ports:
       - '8080:8080'
