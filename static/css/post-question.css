@@ -47,14 +47,6 @@ button:hover {
   opacity: 0.9; /* Slight opacity change on hover */
 }
 
-.answer-box {
-  background-color: #f8f9fa; /* Slightly off-white background */
-  border: 2px dashed #007bff; /* Dashed border for emphasis */
-  border-radius: 5px; /* Rounded corners */
-  margin-bottom: 10px;
-  padding: 10px;
-}
-
 .answer-content::before {
   content: attr(data-placeholder);
   display: block;
