@@ -8,24 +8,54 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId  # For generating unique IDs
 from flask_socketio import SocketIO, send, emit
 import json
+import uuid
+import base64
+import uuid
+import base64
 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
 
-client = MongoClient("mongo")
+client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
 db = client["cse312"]
 users = db["users"]
 questions = db["questions"]
 submissions = db["submissions"]
 
-@app.before_request
-def before_request():
-    if not request.is_secure:
-        url = request.url.replace('http://', 'https://', 1)
-        code = 301
-        return redirect(url, code=code)
+UPLOAD_FOLDER = os.path.join('static', 'images')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def generate_unique_filename(filename):
+    # Extract the file extension from the image data
+    ext = filename.split('/')[1]
+    # Generate a unique filename using UUID
+    unique_filename = str(uuid.uuid4()) + '.'+ ext
+    return unique_filename
+
+def allowed_file(filename):
+    return filename.split('/')[1] in ALLOWED_EXTENSIONS
+
+def save_image(image_data, filename):
+    # Define the directory where you want to save the images
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    
+    # Create the directory if it doesn't exist
+    os.makedirs(upload_folder, exist_ok=True)
+    
+    # Generate a unique filename for the image
+    filename = generate_unique_filename(filename)
+    
+    # Combine the directory and filename to get the full path
+    image_path = os.path.join(upload_folder, filename)
+    
+    # Save the image data to the specified path
+    with open(image_path, 'wb') as f:
+        f.write(image_data)
+    
+    return image_path
 
 @socketio.on('connect')
 def ws_connect():
@@ -83,8 +113,21 @@ def post_question():
         if correct_answer >= len(answers):
             # Handle error: correct answer index out of range
             return "Error: Correct answer index out of range.", 400
+        
+        image_path = None
+        if 'image' in data:
+            image_data = data['image']
+            parts = image_data.split(';base64,')
+            if len(parts) == 2:
+                data_type, base64_str = parts
+                # Decode the base64 string
+                image_data = base64.b64decode(base64_str)
+                filename = data_type.split(':')[1]
+                if allowed_file(filename):
+                    print("HELLOOO")
+                    image_path = save_image(image_data, filename)
 
-        insert_question(username, question, answers, correct_answer)
+        insert_question(username, question, answers, correct_answer, image_path)
         return redirect(url_for('home_route'))
     return render_template('post-question.html')
 
@@ -165,5 +208,5 @@ def add_header(response):
 
 if __name__ == '__main__':
     #app.run(debug=True, port=8080, host = '0.0.0.0')
-    socketio.run(app, ssl_context=('cert.pem', 'key.pem'), allow_unsafe_werkzeug=True, port=8080, host='0.0.0.0')
+    socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
 

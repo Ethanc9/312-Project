@@ -15,7 +15,13 @@
     <div id="questions-container">
         {% for question in questions %}
         <div class="question">
+            {% if question.image_path %}
+            <p>Q:</p>
+            <img src="{{ question.image_path }}" alt="Question Image" class="question-image">
+            {% endif %}
+            {% if question.question %}
             <p>Q: {{ question.question }}</p>
+            {% endif %}
             <!-- Display who posted the question -->
             <p>Posted by: {{ question.username }}</p>
             <!-- Display the answer count -->
@@ -88,16 +94,29 @@
 
     socket.on('update_question', function(new_question) {
         console.log(new_question);
-        questionJSON = JSON.parse(new_question);
+        const questionJSON = JSON.parse(new_question);
         const oldquestions = document.getElementById("questions-container");
-        console.log(questionJSON.answers);
-        
-        oldquestions.innerHTML += "<div class='question'>\r\n" + "<p>Q: " + questionJSON.question + "</p>" + "<!-- Display who posted the question -->\r\n" + "<p>Posted by: "+ questionJSON.username +"</p>" + "<!-- Display the answer count -->\r\n"+ "<p>Answers submitted: " + questionJSON.answer_count + "</p>\r\n" + "<form onsubmit='submitAnswer(event, this, " + questionJSON._id + "'); return false;'>\r\n{% for answer in "+ questionJSON.answers +"%}\r\n<label class='answer-option'>" + "<input type='radio' name='answer-" + questionJSON._id + "'value='" + questionJSON.correct_answer + " '>\r\n" + questionJSON.answers[questionJSON.correct_answer] + "</label>\r\n{% endfor %}\r\n<button type='submit'>Submit Answer</button>\r\n</form>\r\n</div>"
-            
-        
-        // startinghtml = startinghtml.replace('questions', new_questions)
-        // console.log(startinghtml)
-        // oldquestions.innerHTML = startinghtml
+
+        // Check if the question already exists to prevent duplication
+        if (!document.getElementById(`question-${questionJSON._id}`)) {
+            let newQuestionHTML = `<div class='question' id='question-${questionJSON._id}'>
+                <p>Q: ${questionJSON.question}</p>
+                <p>Posted by: ${questionJSON.username}</p>
+                <p>Answers submitted: ${questionJSON.answer_count}</p>
+                <form onsubmit='submitAnswer(event, this, "${questionJSON._id}"); return false;'>`;
+
+            // Loop through each answer and append it
+            questionJSON.answers.forEach((answer, index) => {
+                newQuestionHTML += `<label class='answer-option'>
+                    <input type='radio' name='answer-${questionJSON._id}' value='${index}'>
+                    ${answer}
+                </label>`;
+            });
+
+            newQuestionHTML += `<button type='submit'>Submit Answer</button></form></div>`;
+
+            oldquestions.innerHTML += newQuestionHTML;
+        }
     });
 
 

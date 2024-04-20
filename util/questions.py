@@ -2,12 +2,12 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId 
 import datetime
 
-client = MongoClient("mongo")
+client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
 db = client["cse312"]
 questions = db["questions"]
 submissions = db["submissions"]
 
-def insert_question(username, question, answers, correct_answer):
+def insert_question(username, question, answers, correct_answer, image_path: None):
     question_id = ObjectId()  
     question_document = {
         "_id": question_id,
@@ -16,7 +16,8 @@ def insert_question(username, question, answers, correct_answer):
         "answers": answers,
         "correct_answer": correct_answer,
         "posted_at": datetime.datetime.utcnow(),
-        "answer_count": 0  
+        "answer_count": 0,  
+        "image_path": image_path
     }
     questions.insert_one(question_document)
     return question_id
