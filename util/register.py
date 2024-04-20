@@ -1,9 +1,9 @@
 from pymongo import MongoClient
 from flask import jsonify
 import bcrypt
-import re  # Import regular expression module for pattern matching
+import re,os  # Import regular expression module for pattern matching
 
-client = MongoClient("mongo")
+client = MongoClient(os.environ.get("MONGO_URL"))
 db = client["cse312"]
 users = db["users"]
 

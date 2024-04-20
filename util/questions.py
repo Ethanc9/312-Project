@@ -1,8 +1,9 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId 
-import datetime
+import datetime, os
 
-client = MongoClient("mongo")
+client = MongoClient(os.environ.get("MONGO_URL"))
+db = client["cse312"]
 db = client["cse312"]
 questions = db["questions"]
 submissions = db["submissions"]
