@@ -3,7 +3,7 @@ from flask import jsonify
 import bcrypt
 import re,os  # Import regular expression module for pattern matching
 
-client = MongoClient(os.environ.get("MONGO_URL"))
+client = MongoClient("mongo")
 db = client["cse312"]
 users = db["users"]
 
