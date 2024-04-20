@@ -5,12 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Question and Answer Board</title>
 <link rel="stylesheet" href="static/css/post-question.css">
+<style>
+  /* CSS styles for the image preview */
+  .preview-image {
+    max-width: 200px;
+    display: block; /*Centered Horizontally*/
+    margin: 0 auto; 
+  }
+</style>
 </head>
 <body>
 
 <div class="container">
   <div class="question-box">
     <textarea id="questionInput" placeholder="Type your question here..."></textarea>
+    <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+    <div id="imagePreview"></div>
     <div class="answer-box"></div>
     <div class="buttons">
       <button id="addBtn">Add Answer</button>
@@ -35,11 +45,28 @@
         socket.emit('my event', {data: 'I\'m connected!'});
     });
 
-    
+    function previewImage(event) {
+        var imagePreview = document.getElementById('imagePreview');
+        imagePreview.innerHTML = ''; // Clear previous preview
+
+        var file = event.target.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function (event) {
+          var img = document.createElement('img');
+          img.src = event.target.result;
+          img.alt = 'Image Preview';
+          img.classList.add('preview-image');
+          imagePreview.appendChild(img);
+          // Hide the textarea box when an image is uploaded
+          document.getElementById('questionInput').style.display = 'none';
+        };
+
+        reader.readAsDataURL(file);
+      }
 
 
 </script>
 
 </body>
 </html>
-
