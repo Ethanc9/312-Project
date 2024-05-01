@@ -36,13 +36,13 @@ def check_request_limit():
         ip_tracker[ip] = {
             'count': 0,
             'timestamp': current_time,
-            'banned?': False,
-            'ban_done?': None
+            'banned': False,
+            'ban_done': None
         }
 
     # Check if IP is currently banned
-    if ip_tracker[ip]['banned?']:
-        if current_time < ip_tracker[ip]['ban_done?']:
+    if ip_tracker[ip]['banned']:
+        if current_time < ip_tracker[ip]['ban_done']:
             response = make_response('Too many requests', 429)
             return response
         else:
@@ -50,8 +50,8 @@ def check_request_limit():
             ip_tracker[ip] = {
                 'count': 1,
                 'timestamp': current_time,
-                'banned?': False,
-                'ban_done?': None
+                'banned': False,
+                'ban_done': None
             }
     else:
         # Calculate time elapsed since last request
@@ -60,8 +60,8 @@ def check_request_limit():
             ip_tracker[ip]['count'] += 1
             if ip_tracker[ip]['count'] > 50:
                 # Ban IP if request count exceeds limit
-                ip_tracker[ip]['banned?'] = True
-                ip_tracker[ip]['ban_done?'] = current_time + timedelta(seconds=30)
+                ip_tracker[ip]['banned'] = True
+                ip_tracker[ip]['ban_done'] = current_time + timedelta(seconds=30)
                 response = make_response('Too many requests', 429)
                 return response
         else:
@@ -69,8 +69,8 @@ def check_request_limit():
             ip_tracker[ip] = {
                 'count': 1,
                 'timestamp': current_time,
-                'banned?': False,
-                'ban_done?': None
+                'banned': False,
+                'ban_done': None
             }
 
 app.secret_key = 'your_secret_key'
