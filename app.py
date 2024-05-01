@@ -28,44 +28,50 @@ ip_tracker = {}
 
 @app.before_request
 def check_request_limit():
-
     ip = request.remote_addr
+    current_time = datetime.datetime.now()
 
-    if ip in ip_tracker:
-        last_request_time = ip_tracker[ip]['timestamp']
-        time_elapsed = datetime.datetime.now() - last_request_time
+    # Initialize IP tracking if not already done
+    if ip not in ip_tracker:
+        ip_tracker[ip] = {
+            'count': 0,
+            'timestamp': current_time,
+            'banned?': False,
+            'ban_done?': None
+        }
 
-        if ip_tracker[ip]['banned?']:
-            if datetime.datetime.now() < ip_tracker[ip]['ban_done?']:
-                response = make_response('Too many requests', 429)
-                return response
-            else:
-                ip_tracker[ip] = {
-                    'count': 1,
-                    'timestamp': datetime.datetime.now(),
-                    'banned?': False
-                }
-        elif time_elapsed < timedelta(seconds=10):
+    # Check if IP is currently banned
+    if ip_tracker[ip]['banned?']:
+        if current_time < ip_tracker[ip]['ban_done?']:
+            response = make_response('Too many requests', 429)
+            return response
+        else:
+            # Reset IP tracking after ban period is over
+            ip_tracker[ip] = {
+                'count': 1,
+                'timestamp': current_time,
+                'banned?': False,
+                'ban_done?': None
+            }
+    else:
+        # Calculate time elapsed since last request
+        time_elapsed = current_time - ip_tracker[ip]['timestamp']
+        if time_elapsed < timedelta(seconds=10):
             ip_tracker[ip]['count'] += 1
-
             if ip_tracker[ip]['count'] > 50:
+                # Ban IP if request count exceeds limit
                 ip_tracker[ip]['banned?'] = True
-                ban_end_time = last_request_time + timedelta(seconds=30)
-                ip_tracker[ip]['ban_done?'] = ban_end_time
+                ip_tracker[ip]['ban_done?'] = current_time + timedelta(seconds=30)
                 response = make_response('Too many requests', 429)
                 return response
         else:
+            # Reset count if time elapsed is more than 10 seconds
             ip_tracker[ip] = {
                 'count': 1,
-                'timestamp': datetime.datetime.now(),
-                'banned?': False
+                'timestamp': current_time,
+                'banned?': False,
+                'ban_done?': None
             }
-    else:
-        ip_tracker[ip] = {
-            'count': 1,
-            'timestamp': datetime.datetime.now(),
-            'banned?': False
-        }
 
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
