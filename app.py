@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify, current_app, send_from_directory
 import os
 from markupsafe import escape
@@ -23,18 +24,48 @@ from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 
-# Initialize the Limiter
-limiter = Limiter(
-    app,
-    key_func=get_remote_address,
-    default_limits=["50 per 10 seconds"],
-    storage_uri="memory://",
-    strategy="moving-window"
-)
+ip_tracker = {}
 
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    return jsonify(error="Too Many Requests: You have exceeded your request rate of 50 requests in 10 seconds. Please wait for 30 seconds."), 429
+@app.before_request
+def check_request_limit():
+
+    ip = request.remote_addr
+
+    if ip in ip_tracker:
+        last_request_time = ip_tracker[ip]['timestamp']
+        time_elapsed = datetime.datetime.now() - last_request_time
+
+        if ip_tracker[ip]['banned?']:
+            if datetime.datetime.now() < ip_tracker[ip]['ban_done?']:
+                response = make_response('Too many requests', 429)
+                return response
+            else:
+                ip_tracker[ip] = {
+                    'count': 1,
+                    'timestamp': datetime.datetime.now(),
+                    'banned?': False
+                }
+        elif time_elapsed < timedelta(seconds=10):
+            ip_tracker[ip]['count'] += 1
+
+            if ip_tracker[ip]['count'] > 50:
+                ip_tracker[ip]['banned?'] = True
+                ban_end_time = last_request_time + timedelta(seconds=30)
+                ip_tracker[ip]['ban_done?'] = ban_end_time
+                response = make_response('Too many requests', 429)
+                return response
+        else:
+            ip_tracker[ip] = {
+                'count': 1,
+                'timestamp': datetime.datetime.now(),
+                'banned?': False
+            }
+    else:
+        ip_tracker[ip] = {
+            'count': 1,
+            'timestamp': datetime.datetime.now(),
+            'banned?': False
+        }
 
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
