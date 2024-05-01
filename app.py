@@ -13,10 +13,19 @@ import base64
 import uuid
 import base64
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
+
+# Initialize the Limiter
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["50 per 10 second", "1 per 30 second"]
+)
 
 client = MongoClient("mongo")
 db = client["cse312"]
@@ -206,7 +215,12 @@ def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return make_response(
+            jsonify(error="Too Many Requests: Rate limit exceeded. Please try again later."), 429
+    )
+
 if __name__ == '__main__':
     #app.run(debug=True, port=8080, host = '0.0.0.0')
     socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
-
