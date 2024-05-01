@@ -16,23 +16,19 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
-socketio = SocketIO(app)
-
-# Setup the Flask-Limiter
 limiter = Limiter(
-    app,
-    default_limits=["50 per 10 seconds"]
+    get_remote_address,
+    app=app,
+    default_limits=["50 per 10 seconds"],
 )
-
-# Block the IP for 30 seconds if it exceeds the rate limit
-@limiter.request_filter
-def ip_whitelist():
-    return request.remote_addr == "127.0.0.1"
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
-    return jsonify(error="Too Many Requests: You have been rate limited. Please wait 30 seconds before trying again."), 429
+    return jsonify(error="Too Many Requests: You have exceeded your request rate of 50 requests in 10 seconds. Please wait for 30 seconds."), 429
+
+app.secret_key = 'your_secret_key'
+socketio = SocketIO(app)
+
 
 client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
 db = client["cse312"]
@@ -88,6 +84,7 @@ def ws_sendquestion(msg):
     emit('update_question', questions_data, broadcast=True)
 
 @app.route('/', methods=['GET', 'POST'])
+@limiter.limit("50 per 10 seconds")
 def home_route():
     user_name = None
     if 'auth_token' in request.cookies:
