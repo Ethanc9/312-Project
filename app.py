@@ -17,13 +17,24 @@ from flask_limiter.util import get_remote_address
 from time import time
 
 
+from flask import Flask, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 app = Flask(__name__)
+
+# Initialize the Limiter
 limiter = Limiter(
-    get_remote_address,
-    app=app,
+    app,
+    key_func=get_remote_address,
     default_limits=["50 per 10 seconds"],
+    storage_uri="memory://",
+    strategy="moving-window"
 )
 
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify(error="Too Many Requests: You have exceeded your request rate of 50 requests in 10 seconds. Please wait for 30 seconds."), 429
 
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
