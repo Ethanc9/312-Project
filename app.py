@@ -21,27 +21,9 @@ app = Flask(__name__)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["5 per 10 seconds"],
+    default_limits=["50 per 10 seconds"],
 )
 
-clients = {}
-
-@app.before_request
-def limit_remote_addr():
-    ip = request.remote_addr
-    if ip not in clients:
-        clients[ip] = [time()]
-    else:
-        clients[ip].append(time())
-        clients[ip] = [t for t in clients[ip] if time() - t < 10]  # Keep only the last 10 seconds of requests
-
-    # Check if IP is currently blocked
-    if 'blocked' in clients[ip] and time() - clients[ip]['blocked'] < 30:
-        return jsonify(error="Your IP is temporarily blocked due to excessive requests. Please wait."), 429
-
-    if len(clients[ip]) > 50:
-        clients[ip] = {'blocked': time()}  # Block the IP
-        return jsonify(error="Too Many Requests: You have exceeded your request rate of 50 requests in 10 seconds. Please wait for 30 seconds."), 429
 
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
