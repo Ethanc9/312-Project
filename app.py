@@ -22,7 +22,6 @@ socketio = SocketIO(app)
 # Setup the Flask-Limiter
 limiter = Limiter(
     app,
-    key_func=get_remote_address,
     default_limits=["50 per 10 seconds"]
 )
 
