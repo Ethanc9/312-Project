@@ -84,7 +84,6 @@ def ws_sendquestion(msg):
     emit('update_question', questions_data, broadcast=True)
 
 @app.route('/', methods=['GET', 'POST'])
-@limiter.limit("50 per 10 seconds")
 def home_route():
     user_name = None
     if 'auth_token' in request.cookies:
