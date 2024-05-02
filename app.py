@@ -12,7 +12,7 @@ import uuid
 import base64
 import uuid
 import base64
-
+from collections import Counter
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -21,11 +21,11 @@ app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
 
 # Initialize the Limiter
-limiter = Limiter(
-    app,
-    key_func=get_remote_address,
-    default_limits=["50 per 10 second", "1 per 30 second"]
-)
+#limiter = Limiter(
+#    app,
+#    key_func=get_remote_address,
+#    default_limits=["50 per 10 second", "1 per 30 second"]
+#)
 
 client = MongoClient("mongo")
 db = client["cse312"]
@@ -210,6 +210,19 @@ def validate_answer_route():
     else:
         return jsonify(result), 404
 
+@app.route('/question-results/<question_id>')
+def question_results(question_id):
+    #correct_count = submissions.count_documents({"questionId": question_id, "is_correct": True})
+    submissions_data = submissions.find({"questionId": question_id})
+    answer_counts = Counter()
+    for submission in submissions_data:
+        chosen_answer = submission.get("chosenAnswer")
+        answer_counts[chosen_answer] += 1    
+    answer_counts_dict = dict(answer_counts)
+    return jsonify(answer_counts_dict)
+    #return jsonify({"correctCount": correct_count})
+
+
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -222,5 +235,5 @@ def ratelimit_handler(e):
     )
 
 if __name__ == '__main__':
-    #app.run(debug=True, port=8080, host = '0.0.0.0')
-    socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
+    app.run(debug=True, port=8080, host = '0.0.0.0')
+    #socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
