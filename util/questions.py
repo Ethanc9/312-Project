@@ -41,7 +41,8 @@ def validate_answer(username, question_id, answer_index):
     if question and 0 <= answer_index < len(question['answers']):
         is_correct = answer_index == question['correct_answer']
         message = "Correct!" if is_correct else "Incorrect."
-        
+        print("@@@HELELEE@@@@")
+        print(is_correct)
         # Increment the answer count
         questions.update_one({"_id": question_id}, {"$inc": {"answer_count": 1}})
         try:
@@ -49,6 +50,7 @@ def validate_answer(username, question_id, answer_index):
                 "username": username,
                 "questionId": str(question_id),  # Convert ObjectId to string for storage
                 "chosenAnswer": answer_index,
+                "is_correct": is_correct,
                 "submittedAt": datetime.datetime.utcnow()  # Optionally store the submission time
             })
         except Exception as e:
