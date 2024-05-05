@@ -38,8 +38,8 @@
 
             <!-- Results dropdown -->
             <div class="results-dropdown">
-                <button class="results-btn" id= "resultsButton" style="display: none;" onclick="toggleResults('{{ question._id }}')">Show Results</button>
-                <div class="results-content" id="results-content-{{ question._id }}">
+                <button class="results-btn" id="resultsButton-{{ question._id }}" style="display: none;" onclick="toggleResults('{{ question._id }}')">Show Results</button>
+                <div class="results-content" id="results-content-{{ question._id }}" style="display: none;">
                 </div>
             </div>
         </div>
@@ -99,8 +99,6 @@
         function toggleResults(questionId) {
             const dropdown = document.getElementById(`results-content-${questionId}`);
             if (dropdown.style.display === 'block') {
-                dropdown.style.display = 'none';
-            } else {
                 fetch(`/question-results/${questionId}`)
                     .then(response => {
                         if (response.ok) {
@@ -150,6 +148,8 @@
                         dropdown.innerHTML = 'Failed to fetch results';
                         dropdown.style.display = 'block';
                     });
+            } else {
+                dropdown.style.display = 'none';
             }
         }
     </script>
