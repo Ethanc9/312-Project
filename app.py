@@ -15,17 +15,12 @@ import base64
 from collections import Counter
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from threading import Thread
+import time
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
-
-# Initialize the Limiter
-#limiter = Limiter(
-#    app,
-#    key_func=get_remote_address,
-#    default_limits=["50 per 10 second", "1 per 30 second"]
-#)
 
 client = MongoClient("mongo")
 db = client["cse312"]
@@ -68,16 +63,14 @@ def save_image(image_data, filename):
 
 @socketio.on('connect')
 def ws_connect():
-    print('connected')
+    print("connected")
 
 @socketio.on('message')
 def ws_sendquestion(msg):
-    print('questions upated')
     questions_data = output_questions()
     for i in questions_data:
         del i['posted_at']
     questions_data = json.dumps(questions_data[len(questions_data)-1])
-    print(questions_data)
     emit('update_question', questions_data, broadcast=True)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -133,10 +126,10 @@ def post_question():
                 image_data = base64.b64decode(base64_str)
                 filename = data_type.split(':')[1]
                 if allowed_file(filename):
-                    print("HELLOOO")
                     image_path = save_image(image_data, filename)
 
-        insert_question(username, question, answers, correct_answer, image_path)
+        question_id = insert_question(username, question, answers, correct_answer, image_path)
+        socketio.emit('question_posted', {'question_id': str(question_id)})  # Emit the question ID to the client
         return redirect(url_for('home_route'))
     return render_template('post-question.html')
 
@@ -148,7 +141,6 @@ def login_route():
         password = escape(request.form['password'])
         authenticated, token = login(username, password)
         if authenticated:
-            print("authenticated")
             # Authentication successful, set session and cookie
             session['username'] = username
             response = make_response(redirect(url_for('home_route')))
@@ -156,11 +148,9 @@ def login_route():
             response.set_cookie("auth_token", token, httponly=True, max_age=ten_years_in_seconds)
             return response
         else:
-            print("Enter Login")
             # Authentication failed, redirect to the login page
             return redirect(url_for('login_route'))
     else:
-        print("Enter Login1")
         # Handle GET request by rendering the login form
         return render_template('login.html')
 
@@ -234,6 +224,30 @@ def ratelimit_handler(e):
             jsonify(error="Too Many Requests: Rate limit exceeded. Please try again later."), 429
     )
 
+
+def countdown_timer(duration, question_id):
+    while duration > 0:
+        socketio.sleep(1)  # Sleep for a second
+        duration -= 1
+        print(duration)
+        socketio.emit('timer_update', {'time_left': duration, 'question_id': str(question_id)})  # Ensure you pass question_id as a string
+    socketio.emit('timer_update', {'time_left': 'Time is up!', 'question_id': str(question_id)})
+
+@socketio.on('start_timer')
+def handle_start_timer(data):
+    duration = int(data['duration'])
+    question_id = data['question_id']  # Directly use the passed question ID
+
+    if question_id:
+        start_timer(duration, ObjectId(question_id))
+    else:
+        print("No question ID provided to start a timer for.")
+
+def start_timer(duration, question_id):
+    print("Starting timer for question:", question_id)
+    thread = Thread(target=countdown_timer, args=(duration, question_id))
+    thread.start()
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=8080, host = '0.0.0.0')
-    #socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')
+    socketio.run(app, allow_unsafe_werkzeug=True, port=8080, host = '0.0.0.0')

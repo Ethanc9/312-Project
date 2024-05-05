@@ -45,7 +45,20 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- Link to Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    
+    <!-- Link to answers.js -->
+    <script src="../static/js/answers.js"></script>
+
     <script>
+        var socket = io();
+
+        document.querySelectorAll('.question').forEach(question => {
+            const questionId = question.id.split('-')[1]; 
+        });
+
         async function submitAnswer(event, form, questionId) {
             event.preventDefault(); // Prevent the default form submission
         
@@ -83,81 +96,7 @@
             }
         }
 
-        function startTimer(questionId) {
-            let timeLeft = 30;
-            const timerElement = document.getElementById(`timer-${questionId}`);
-            const timer = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    // Optionally, handle the timeout event, e.g., disable the submit button
-                    const submitButton = document.querySelector(`form[data-question-id="${questionId}"] button[type="submit"]`);
-                    if (submitButton) {
-                        submitButton.disabled = true;
-                        submitButton.textContent = 'Time Up';
-                    }
-                    // Show the Results button for the specific question
-                    const resultsButton = document.querySelector(`#question-${questionId} .results-btn`);
-                    if (resultsButton) {
-                        resultsButton.style.display = 'inline'; 
-                    }
-                }
-            }, 1000);
-        }
-
-        // Call startTimer for each question when the page loads or when a new question is added
-        document.querySelectorAll('.question').forEach(question => {
-            const questionId = question.id.split('-')[1]; // Assuming the id of the question div is 'question-<questionId>'
-            startTimer(questionId);
-        });
-    </script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script type="text/javascript" charset="utf-8">
-    var socket = io();
-    socket.on('connect', function() {
-        socket.emit('my event', {data: 'I\'m connected!'});
-        
-    });
-
-    
-
-    // function update_Questions(){
-    //     socket.emit('message', {data: 'updating questions...'})
-    // }
-    // setInterval(update_Questions, 2000);
-
-    socket.on('update_question', function(new_question) {
-        console.log(new_question);
-        const questionJSON = JSON.parse(new_question);
-        const oldquestions = document.getElementById("questions-container");
-
-        // Check if the question already exists to prevent duplication
-        if (!document.getElementById(`question-${questionJSON._id}`)) {
-            let newQuestionHTML = `<div class='question' id='question-${questionJSON._id}'>
-                <p>Q: ${questionJSON.question}</p>
-                <p>Posted by: ${questionJSON.username}</p>
-                <p>Answers submitted: ${questionJSON.answer_count}</p>
-                <p>Timer: <span id="timer-${questionJSON._id}">30</span> seconds</p>
-                <form onsubmit='submitAnswer(event, this, "${questionJSON._id}"); return false;' data-question-id="${questionJSON._id}">`;
-
-            // Loop through each answer and append it
-            questionJSON.answers.forEach((answer, index) => {
-                newQuestionHTML += `<label class='answer-option'>
-                    <input type='radio' name='answer-${questionJSON._id}' value='${index}'>
-                    ${answer}
-                </label>`;
-            });
-
-            newQuestionHTML += `<button type='submit'>Submit Answer</button></form></div>`;
-
-            oldquestions.innerHTML += newQuestionHTML;
-            startTimer(questionJSON._id); // Start the timer for the new question
-        }
-    });
-    function toggleResults(questionId) {
+        function toggleResults(questionId) {
             const dropdown = document.getElementById(`results-content-${questionId}`);
             if (dropdown.style.display === 'block') {
                 dropdown.style.display = 'none';
@@ -213,8 +152,43 @@
                     });
             }
         }
+    </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+        
+    });
 
+    socket.on('update_question', function(new_question) {
+        console.log(new_question);
+        const questionJSON = JSON.parse(new_question);
+        const oldquestions = document.getElementById("questions-container");
+
+        // Check if the question already exists to prevent duplication
+        if (!document.getElementById(`question-${questionJSON._id}`)) {
+            let newQuestionHTML = `<div class='question' id='question-${questionJSON._id}'>
+                <p>Q: ${questionJSON.question}</p>
+                <p>Posted by: ${questionJSON.username}</p>
+                <p>Answers submitted: ${questionJSON.answer_count}</p>
+                <p>Timer: <span id="timer-${questionJSON._id}">30</span> seconds</p>
+                <form onsubmit='submitAnswer(event, this, "${questionJSON._id}"); return false;' data-question-id="${questionJSON._id}">`;
+
+            // Loop through each answer and append it
+            questionJSON.answers.forEach((answer, index) => {
+                newQuestionHTML += `<label class='answer-option'>
+                    <input type='radio' name='answer-${questionJSON._id}' value='${index}'>
+                    ${answer}
+                </label>`;
+            });
+
+            newQuestionHTML += `<button type='submit'>Submit Answer</button></form></div>`;
+
+            oldquestions.innerHTML += newQuestionHTML;
+        }
+    });
 </script>
 
 </body>

@@ -15,6 +15,7 @@ def insert_question(username, question, answers, correct_answer, image_path: Non
         "question": question,
         "answers": answers,
         "correct_answer": correct_answer,
+        "duration": 30,
         "posted_at": datetime.datetime.utcnow(),
         "answer_count": 0,  
         "image_path": image_path
@@ -27,7 +28,7 @@ def output_questions():
     for question in questions_list:
         question['_id'] = str(question['_id'])
         if 'answer_count' not in question:
-            question['answer_count'] = 0  # Default to 0 if not present
+            question['answer_count'] = 0  
     print(questions_list)
     return questions_list
 
@@ -41,7 +42,6 @@ def validate_answer(username, question_id, answer_index):
     if question and 0 <= answer_index < len(question['answers']):
         is_correct = answer_index == question['correct_answer']
         message = "Correct!" if is_correct else "Incorrect."
-        print("@@@HELELEE@@@@")
         print(is_correct)
         # Increment the answer count
         questions.update_one({"_id": question_id}, {"$inc": {"answer_count": 1}})
