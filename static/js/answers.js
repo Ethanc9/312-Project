@@ -4,18 +4,12 @@ socket.on('connect', function() {
     console.log('Connected to server via WebSocket');
 });
 
-socket.on('question_posted', function(data) {
-    console.log("Question ID:", data.question_id);
-    socket.emit('start_timer', { duration: 30, question_id: data.question_id });
-});
-
 
 socket.on('timer_update', function(data) {
     console.log("Timer update received", data);
     const timerElement = document.getElementById(`timer-${data.question_id}`);
     if (data.time_left > 0) {
-        timerElement.textContent = data.time_left;
-        // Save the remaining time and the current timestamp
+        timerElement.textContent = data.time_left;        
         localStorage.setItem(`timer-${data.question_id}`, JSON.stringify({ time_left: data.time_left, timestamp: Date.now() }));
     } else {
         handleTimerEnd(data.question_id);

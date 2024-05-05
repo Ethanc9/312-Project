@@ -130,6 +130,7 @@ def post_question():
 
         question_id = insert_question(username, question, answers, correct_answer, image_path)
         socketio.emit('question_posted', {'question_id': str(question_id)})  # Emit the question ID to the client
+        start_timer(30, question_id)
         return redirect(url_for('home_route'))
     return render_template('post-question.html')
 
