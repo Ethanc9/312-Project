@@ -8,9 +8,8 @@ socket.on('connect', function() {
 socket.on('timer_update', function(data) {
     console.log("Timer update received", data);
     const timerElement = document.getElementById(`timer-${data.question_id}`);
-    if (data.time_left > 0) {
+    if (data.time_left != 0) {
         timerElement.textContent = data.time_left;        
-        localStorage.setItem(`timer-${data.question_id}`, JSON.stringify({ time_left: data.time_left, timestamp: Date.now() }));
     } else {
         handleTimerEnd(data.question_id);
     }
@@ -27,40 +26,6 @@ function handleTimerEnd(questionId) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.question').forEach(question => {
-        const questionId = question.id.split('-')[1];
-        const timerState = localStorage.getItem(`timer-${questionId}`);
-        if (timerState) {
-            const { time_left, timestamp } = JSON.parse(timerState);
-            const currentTime = Date.now();
-            const elapsedTime = Math.floor((currentTime - timestamp) / 1000); // Convert ms to seconds
-            const adjustedTimeLeft = Math.max(time_left - elapsedTime, 0);
-
-            if (adjustedTimeLeft > 0) {
-                // Restart the timer with the adjusted time left
-                startTimer(adjustedTimeLeft, questionId);
-            } else {
-                // Handle timer end if the adjusted time is 0 or less
-                handleTimerEnd(questionId);
-            }
-        }
-    });
-});
-
-function startTimer(duration, questionId) {
-    const timerElement = document.getElementById(`timer-${questionId}`);
-    const interval = setInterval(() => {
-        if (duration > 0) {
-            duration--;
-            timerElement.textContent = duration;
-            localStorage.setItem(`timer-${questionId}`, JSON.stringify({ time_left: duration, timestamp: Date.now() }));
-        } else {
-            clearInterval(interval);
-            handleTimerEnd(questionId);
-        }
-    }, 1000);
-}
 
 async function submitAnswer(event, form, questionId) {
     event.preventDefault();
@@ -88,5 +53,51 @@ async function submitAnswer(event, form, questionId) {
         }
     } catch (error) {
         console.error('Network error:', error);
+    }
+}
+
+function toggleResults(questionId) {
+    const dropdown = document.getElementById(`results-content-${questionId}`);
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        fetch(`/question-results/${questionId}`)
+            .then(response => response.json())
+            .then(data => {
+                const answers = Object.keys(data);
+                const counts = Object.values(data);
+                const labels = answers.map((answer, index) => `Option ${index + 1}`);
+
+                const ctx = document.createElement('canvas').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Votes',
+                            data: counts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                dropdown.innerHTML = ''; // Clear previous content
+                dropdown.appendChild(ctx.canvas);
+                dropdown.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching results:', error);
+                dropdown.innerHTML = 'Failed to fetch results';
+                dropdown.style.display = 'block';
+            });
+    } else {
+        dropdown.style.display = 'none';
     }
 }

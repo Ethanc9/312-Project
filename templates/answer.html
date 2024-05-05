@@ -96,62 +96,6 @@
             }
         }
 
-        function toggleResults(questionId) {
-            const dropdown = document.getElementById(`results-content-${questionId}`);
-            if (dropdown.style.display === 'block') {
-                fetch(`/question-results/${questionId}`)
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error('Failed to fetch results');
-                        }
-                    })
-                    .then(data => {
-                        const answers = Object.keys(data);
-                        const counts = Object.values(data);
-                        
-                        const labels = answers.map((answer, index) => `Chose ${index}`);
-
-                        // Create a bar chart using Chart.js
-                        const ctx = document.createElement('canvas').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    label: 'Answer Counts',
-                                    data: counts,
-                                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                            beginAtZero: true
-                                        }
-                                    }]
-                                }
-                            }
-                        });
-
-                        // Replace the dropdown content with the chart canvas
-                        dropdown.innerHTML = '';
-                        dropdown.appendChild(ctx.canvas);
-                        dropdown.style.display = 'block';
-                    })
-                    .catch(error => {
-                        console.error('Error fetching results:', error);
-                        dropdown.innerHTML = 'Failed to fetch results';
-                        dropdown.style.display = 'block';
-                    });
-            } else {
-                dropdown.style.display = 'none';
-            }
-        }
     </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
