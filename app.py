@@ -1,6 +1,5 @@
 from datetime import timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify, current_app, send_from_directory
-import os
 from markupsafe import escape
 from util.questions import *
 from util.register import *
@@ -8,14 +7,8 @@ from util.login import *
 from pymongo import MongoClient
 from bson.objectid import ObjectId  # For generating unique IDs
 from flask_socketio import SocketIO, send, emit
-import json
-import uuid
-import base64
-import uuid
-import base64
+import json, base64, uuid, base64, os
 from collections import Counter
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from threading import Thread
 import time
 
@@ -74,7 +67,7 @@ app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
 
 
-client = MongoClient("mongo")
+client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
 db = client["cse312"]
 users = db["users"]
 questions = db["questions"]
@@ -270,13 +263,6 @@ def question_results(question_id):
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
-
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    return make_response(
-            jsonify(error="Too Many Requests: Rate limit exceeded. Please try again later."), 429
-    )
-
 
 def countdown_timer(duration, question_id):
     while duration > 0:
