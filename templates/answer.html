@@ -3,6 +3,7 @@
 <head>
     <link rel="stylesheet" href="../static/css/answer.css">
     <title>Quiz</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="header">
@@ -11,7 +12,7 @@
 
     <div id="questions-container">
         {% for question in questions %}
-        <div class="question">
+        <div class="question" id="question-{{ question._id }}">
             {% if question.image_path %}
             <p>Q:</p>
             <img src="{{ question.image_path }}" alt="Question Image" class="question-image">
@@ -23,7 +24,9 @@
             <p>Posted by: {{ question.username }}</p>
             <!-- Display the answer count -->
             <p>Answers submitted: {{ question.answer_count }}</p>
-            <form onsubmit="submitAnswer(event, this, '{{ question._id }}'); return false;">
+            <!-- Timer display -->
+            <p>Timer: <span id="timer-{{ question._id }}">30</span> seconds</p>
+            <form onsubmit="submitAnswer(event, this, '{{ question._id }}'); return false;" data-question-id="{{ question._id }}">
                 {% for answer in question.answers %}
                 <label class="answer-option">
                     <input type="radio" name="answer-{{ question._id }}" value="{{ loop.index0 }}">
@@ -32,10 +35,30 @@
                 {% endfor %}
                 <button type="submit">Submit Answer</button>
             </form>
+
+            <!-- Results dropdown -->
+            <div class="results-dropdown">
+                <button class="results-btn" id="resultsButton-{{ question._id }}" style="display: none;" onclick="toggleResults('{{ question._id }}')">Show Results</button>
+                <div class="results-content" id="results-content-{{ question._id }}" style="display: none;">
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>
+
+    <!-- Link to Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    
+    <!-- Link to answers.js -->
+    <script src="../static/js/answers.js"></script>
+
     <script>
+        var socket = io();
+
+        document.querySelectorAll('.question').forEach(question => {
+            const questionId = question.id.split('-')[1]; 
+        });
+
         async function submitAnswer(event, form, questionId) {
             event.preventDefault(); // Prevent the default form submission
         
@@ -72,7 +95,8 @@
                 console.error('Network error:', error);
             }
         }
-        </script>
+
+    </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
@@ -81,13 +105,6 @@
         socket.emit('my event', {data: 'I\'m connected!'});
         
     });
-
-    
-
-    // function update_Questions(){
-    //     socket.emit('message', {data: 'updating questions...'})
-    // }
-    // setInterval(update_Questions, 2000);
 
     socket.on('update_question', function(new_question) {
         console.log(new_question);
@@ -100,7 +117,8 @@
                 <p>Q: ${questionJSON.question}</p>
                 <p>Posted by: ${questionJSON.username}</p>
                 <p>Answers submitted: ${questionJSON.answer_count}</p>
-                <form onsubmit='submitAnswer(event, this, "${questionJSON._id}"); return false;'>`;
+                <p>Timer: <span id="timer-${questionJSON._id}">30</span> seconds</p>
+                <form onsubmit='submitAnswer(event, this, "${questionJSON._id}"); return false;' data-question-id="${questionJSON._id}">`;
 
             // Loop through each answer and append it
             questionJSON.answers.forEach((answer, index) => {
@@ -115,8 +133,6 @@
             oldquestions.innerHTML += newQuestionHTML;
         }
     });
-
-
 </script>
 
 </body>

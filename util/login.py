@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from flask import jsonify, request, session, redirect, url_for, make_response
 import secrets, bcrypt, hashlib
 
-client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
+client = MongoClient("mongo")
 db = client["cse312"]
 users = db["users"]
 

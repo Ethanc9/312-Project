@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId 
 import datetime
 
-client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
+client = MongoClient("mongo")
 db = client["cse312"]
 questions = db["questions"]
 submissions = db["submissions"]
@@ -15,6 +15,7 @@ def insert_question(username, question, answers, correct_answer, image_path: Non
         "question": question,
         "answers": answers,
         "correct_answer": correct_answer,
+        "duration": 30,
         "posted_at": datetime.datetime.utcnow(),
         "answer_count": 0,  
         "image_path": image_path
@@ -27,7 +28,7 @@ def output_questions():
     for question in questions_list:
         question['_id'] = str(question['_id'])
         if 'answer_count' not in question:
-            question['answer_count'] = 0  # Default to 0 if not present
+            question['answer_count'] = 0  
     print(questions_list)
     return questions_list
 
@@ -41,7 +42,7 @@ def validate_answer(username, question_id, answer_index):
     if question and 0 <= answer_index < len(question['answers']):
         is_correct = answer_index == question['correct_answer']
         message = "Correct!" if is_correct else "Incorrect."
-        
+        print(is_correct)
         # Increment the answer count
         questions.update_one({"_id": question_id}, {"$inc": {"answer_count": 1}})
         try:
@@ -49,6 +50,7 @@ def validate_answer(username, question_id, answer_index):
                 "username": username,
                 "questionId": str(question_id),  # Convert ObjectId to string for storage
                 "chosenAnswer": answer_index,
+                "is_correct": is_correct,
                 "submittedAt": datetime.datetime.utcnow()  # Optionally store the submission time
             })
         except Exception as e:

@@ -9,7 +9,7 @@ document.getElementById('postBtn').addEventListener('click', function() {
         return;
     }
 
-    const answers = Array.from(answerBoxes).map(box => box.textContent.trim()).filter(text => text !== '' && text !== 'Type your answer here...');
+    const answers = Array.from(answerBoxes  ).map(box => box.textContent.trim()).filter(text => text !== '' && text !== 'Type your answer here...');
     const correctAnswer = +document.getElementById('correctAnswer').value;
 
     const postData = {
@@ -17,6 +17,7 @@ document.getElementById('postBtn').addEventListener('click', function() {
         answers: answers,
         correctAnswer: correctAnswer
     };
+
 
     // If an image file is uploaded, add it to the postData
     if (imageFile) {
@@ -28,6 +29,7 @@ document.getElementById('postBtn').addEventListener('click', function() {
         reader.readAsDataURL(imageFile);
     } else {
         sendPostData(postData);
+        console.log("posted question")
     }
 });
 
