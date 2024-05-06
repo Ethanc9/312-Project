@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from flask import jsonify, request, session, redirect, url_for, make_response
 import secrets, bcrypt, hashlib
-
+#Main ports
 client = MongoClient("mongo")
 db = client["cse312"]
 users = db["users"]
