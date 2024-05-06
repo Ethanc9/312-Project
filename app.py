@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, make_response, jsonify, current_app, send_from_directory
 import os
 from markupsafe import escape
@@ -19,8 +20,59 @@ from threading import Thread
 import time
 
 app = Flask(__name__)
+
+ip_tracker = {}
+
+@app.before_request
+def check_request_limit():
+    ip = request.remote_addr
+    current_time = datetime.datetime.now()
+
+    # Initialize IP tracking if not already done
+    if ip not in ip_tracker:
+        ip_tracker[ip] = {
+            'count': 0,
+            'timestamp': current_time,
+            'banned': False,
+            'ban_done': None
+        }
+
+    # Check if IP is currently banned
+    if ip_tracker[ip]['banned']:
+        if current_time < ip_tracker[ip]['ban_done']:
+            response = make_response('Too many requests', 429)
+            return response
+        else:
+            # Reset IP tracking after ban period is over
+            ip_tracker[ip] = {
+                'count': 1,
+                'timestamp': current_time,
+                'banned': False,
+                'ban_done': None
+            }
+    else:
+        # Calculate time elapsed since last request
+        time_elapsed = current_time - ip_tracker[ip]['timestamp']
+        if time_elapsed < timedelta(seconds=10):
+            ip_tracker[ip]['count'] += 1
+            if ip_tracker[ip]['count'] > 50:
+                # Ban IP if request count exceeds limit
+                ip_tracker[ip]['banned'] = True
+                ip_tracker[ip]['ban_done'] = current_time + timedelta(seconds=30)
+                response = make_response('Too many requests', 429)
+                return response
+        else:
+            # Reset count if time elapsed is more than 10 seconds
+            ip_tracker[ip] = {
+                'count': 1,
+                'timestamp': current_time,
+                'banned': False,
+                'ban_done': None
+            }
+
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
+
 
 client = MongoClient("mongo")
 db = client["cse312"]
