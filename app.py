@@ -23,6 +23,7 @@ ip_tracker = {}
 def check_request_limit():
     ip = request.remote_addr
     current_time = datetime.datetime.now()
+    print(f"Request from {ip} at {current_time}")  # Log the IP and time of request
 
     # Initialize IP tracking if not already done
     if ip not in ip_tracker:
@@ -58,7 +59,6 @@ def check_request_limit():
                 response = make_response('Too many requests', 429)
                 return response
         else:
-            # Reset count if time elapsed is more than 10 seconds
             ip_tracker[ip] = {
                 'count': 1,
                 'timestamp': current_time,
