@@ -7,8 +7,8 @@ The feature that we have implemented is that the users can see the results of th
 To test this feature:
   1. Start your server using docker compose up
   2. Open two browsers and navigate to http://localhost:8080
-  3. Open 2 browsers and register and login
-  4. On one of the browser post a question and go to the answers page
+  3. Open 2 browsers and register and login on both
+  4. On one of the browsers post a question and go to the answers page
   5. On second browser answer that question
   6. After the time is up, the result button should appear
   7. Clicking it will show a graph of all submissions and what answers were picked
