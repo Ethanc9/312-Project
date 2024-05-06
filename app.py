@@ -24,43 +24,48 @@ socketio = SocketIO(app)
 
 @app.before_request
 def dos_protection():
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()    current_time = datetime.datetime.now()
+    # Initialize IP tracking if not already done
+    if ip not in ip_tracker:
+        ip_tracker[ip] = {
+            'count': 0,
+            'timestamp': current_time,
+            'banned': False,
+            'ban_done': None
+        }
 
-    if ip in ip_tracker:
-        last_request_time = ip_tracker[ip]['timestamp']
-        time_elapsed = datetime.datetime.now() - last_request_time
-
-        if ip_tracker[ip]['banned']:
-            if datetime.datetime.now() < ip_tracker[ip]['ban_done']:
-                response = make_response('Too many requests', 429)
-                return response
-            else:
-                ip_tracker[ip] = {
-                    'count': 1,
-                    'timestamp': datetime.datetime.now(),
-                    'banned': False
-                }
-        elif time_elapsed < timedelta(seconds=10):
+    # Check if IP is currently banned
+    if ip_tracker[ip]['banned']:
+        if current_time < ip_tracker[ip]['ban_done']:
+            response = make_response('Too many requests', 429)
+            return response
+        else:
+            # Reset IP tracking after ban period is over
+            ip_tracker[ip] = {
+                'count': 1,
+                'timestamp': current_time,
+                'banned': False,
+                'ban_done': None
+            }
+    else:
+        # Calculate time elapsed since last request
+        time_elapsed = current_time - ip_tracker[ip]['timestamp']
+        if time_elapsed < timedelta(seconds=10):
             ip_tracker[ip]['count'] += 1
-
             if ip_tracker[ip]['count'] > 50:
+                # Ban IP if request count exceeds limit
                 ip_tracker[ip]['banned'] = True
-                ban_end_time = last_request_time + timedelta(seconds=30)
-                ip_tracker[ip]['ban_done'] = ban_end_time
+                ip_tracker[ip]['ban_done'] = current_time + timedelta(seconds=30)
                 response = make_response('Too many requests', 429)
                 return response
         else:
+            # Reset count if time elapsed is more than 10 seconds
             ip_tracker[ip] = {
                 'count': 1,
-                'timestamp': datetime.datetime.now(),
-                'banned': False
+                'timestamp': current_time,
+                'banned': False,
+                'ban_done': None
             }
-    else:
-        ip_tracker[ip] = {
-            'count': 1,
-            'timestamp': datetime.datetime.now(),
-            'banned': False
-        }
 
 client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
 db = client["cse312"]
