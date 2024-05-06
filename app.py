@@ -17,13 +17,51 @@ import time
 
 app = Flask(__name__)
 
-
-
 ip_tracker = {}
 
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app)
 
+@app.before_request
+def dos_protection():
+
+    ip = request.remote_addr
+
+    if ip in ip_tracker:
+        last_request_time = ip_tracker[ip]['timestamp']
+        time_elapsed = datetime.datetime.now() - last_request_time
+
+        if ip_tracker[ip]['banned']:
+            if datetime.datetime.now() < ip_tracker[ip]['ban_done']:
+                response = make_response('Too many requests', 429)
+                return response
+            else:
+                ip_tracker[ip] = {
+                    'count': 1,
+                    'timestamp': datetime.datetime.now(),
+                    'banned': False
+                }
+        elif time_elapsed < timedelta(seconds=10):
+            ip_tracker[ip]['count'] += 1
+
+            if ip_tracker[ip]['count'] > 50:
+                ip_tracker[ip]['banned'] = True
+                ban_end_time = last_request_time + timedelta(seconds=30)
+                ip_tracker[ip]['ban_done'] = ban_end_time
+                response = make_response('Too many requests', 429)
+                return response
+        else:
+            ip_tracker[ip] = {
+                'count': 1,
+                'timestamp': datetime.datetime.now(),
+                'banned': False
+            }
+    else:
+        ip_tracker[ip] = {
+            'count': 1,
+            'timestamp': datetime.datetime.now(),
+            'banned': False
+        }
 
 client = MongoClient("mongodb+srv://doapps-19dfe4ea-d434-4c77-a148-372a4bb79f28:KVa4089dq2UX13v5@db-mongodb-nyc3-96778-a663d6e2.mongo.ondigitalocean.com/admin?authSource=admin&tls=true")
 db = client["cse312"]
@@ -95,47 +133,6 @@ def serve_js(filename):
 @app.route('/images/<path:filename>')
 def serve_image(filename):
     return send_from_directory(os.path.join(app.root_path, 'static', 'images'), filename)
-
-@app.before_request
-def dos_protection():
-
-    ip = request.remote_addr
-
-    if ip in ip_tracker:
-        last_request_time = ip_tracker[ip]['timestamp']
-        time_elapsed = datetime.datetime.now() - last_request_time
-
-        if ip_tracker[ip]['banned']:
-            if datetime.datetime.now() < ip_tracker[ip]['ban_done']:
-                response = make_response('Too many requests', 429)
-                return response
-            else:
-                ip_tracker[ip] = {
-                    'count': 1,
-                    'timestamp': datetime.datetime.now(),
-                    'banned': False
-                }
-        elif time_elapsed < timedelta(seconds=10):
-            ip_tracker[ip]['count'] += 1
-
-            if ip_tracker[ip]['count'] > 50:
-                ip_tracker[ip]['banned'] = True
-                ban_end_time = last_request_time + timedelta(seconds=30)
-                ip_tracker[ip]['ban_done'] = ban_end_time
-                response = make_response('Too many requests', 429)
-                return response
-        else:
-            ip_tracker[ip] = {
-                'count': 1,
-                'timestamp': datetime.datetime.now(),
-                'banned': False
-            }
-    else:
-        ip_tracker[ip] = {
-            'count': 1,
-            'timestamp': datetime.datetime.now(),
-            'banned': False
-        }
 
 
 @app.route('/answer-question', methods=['GET', 'POST'])
