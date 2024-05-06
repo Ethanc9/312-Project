@@ -9,6 +9,6 @@ To test this feature:
   2. Open two browsers and navigate to http://localhost:8080
   3. Open 2 browsers and register and login on both
   4. On one of the browsers post a question and go to the answers page
-  5. On second browser answer that question
+  5. On second browser answer that question(Note answer count does not update real time)
   6. After the time is up, the result button should appear
   7. Clicking it will show a graph of all submissions and what answers were picked
