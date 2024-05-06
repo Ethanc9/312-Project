@@ -24,8 +24,7 @@ socketio = SocketIO(app)
 
 @app.before_request
 def dos_protection():
-
-    ip = request.remote_addr
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
 
     if ip in ip_tracker:
         last_request_time = ip_tracker[ip]['timestamp']
