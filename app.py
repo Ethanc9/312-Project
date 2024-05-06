@@ -24,7 +24,8 @@ socketio = SocketIO(app)
 
 @app.before_request
 def dos_protection():
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()    current_time = datetime.datetime.now()
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()    
+    current_time = datetime.datetime.now()
     # Initialize IP tracking if not already done
     if ip not in ip_tracker:
         ip_tracker[ip] = {
