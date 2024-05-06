@@ -6,9 +6,8 @@ The feature that we have implemented is that the user can see the results of the
 
 To test this feature:
   1. Go to the website https://quizhub.live/
-  2. Register an account by clicking on the login button and click on Join now
-  3. Login to the account 
-  4. When you are at the homepage, click on Show Questions
-  5. Answer a question
-  6. After the time is up, the result button should appear
-  7. Clicking it will show a graph of all submissions and what other users have answered
+  2.Open 2 browsers and register and login
+  3. On one of the browser post a question
+  4. On second browser answer that question
+  7. After the time is up, the result button should appear for the user who posted the question
+  8. Clicking it will show a graph of all submissions and what other users have answered
