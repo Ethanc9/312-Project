@@ -18,7 +18,7 @@ ip_tracker = {}
 
 @app.before_request
 def check_request_limit():
-    ip = request.remote_addr
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
     current_time = datetime.datetime.now()
 
     # Initialize IP tracking if not already done
